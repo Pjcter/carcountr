@@ -1,24 +1,19 @@
-# CLOUD-SEED
-# _replace with your Project Name/Concept_ :  _____ _replace with your particular project name/type_ _____
+# Car Countr
 # Modify this document to expand any and all sections that are applicable for a better understanding from your users/testers/collaborators (remove this comment and other instructions areas for your FINAL release)
 
-An online cloud system to _do X, Y, Z_ built in Java 8=>11 and ___ _replace with other platform requirements_ ___
+An online cloud system to view traffic livestreams and provide insights on the number of cars over time
   
 ## Team
 
-- MEMBER1
-- MEMBER2
-- MEMBER3
-- MEMBER4
-- ...
+- Frank Agnello
+- Peter Carter
+- Jay Wilson
 
 ## Prerequisites
 
-- Examples: Java 11.. Node 12 or above
--  e.g. AWS CLI
+- Terraform
+-  AWS CLI
    https://aws.amazon.com/cli/
--  e.g. AWS CDK Toolkit
-  Install by running: `npm install -g aws-cdk`
 -  _add any other tech stack requirements_
 
 ## How to deploy it 
