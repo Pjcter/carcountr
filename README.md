@@ -5,7 +5,7 @@ An online cloud system to view traffic livestreams and provide insights on the n
   
 ## Team
 
-- Frank Agnello
+- Frank Agnello 
 - Peter Carter
 - Jay Wilson
 
