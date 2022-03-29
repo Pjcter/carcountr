@@ -13,14 +13,12 @@ An online cloud system to view traffic livestreams and provide insights on the n
 
 - Terraform
 -  AWS CLI
-   https://aws.amazon.com/cli/
--  _add any other tech stack requirements_
 
 ## How to deploy it 
-## (this will be key to your grading, be sure EACH and EVERY step is bullet proof <== _remove this once you are SURE your project can be duplicate_)
 
-1. steps to will vary - be sure to indentify in full your mechanism(s)
-2. _add any other steps required or examples of how to use/run_
+1. terraform init
+2. terraform plan
+3. terraform apply
 
 ## Known bugs and disclaimers
 (It may be the case that your implementation is not perfect.)
@@ -31,7 +29,7 @@ If any shortcomings, make clear what these are and where they are located.
 ## How to test/run/access/use it
 
 1. Open in your browser `http://_deploylocation_:8080/`
-3.  _add any other steps required or examples of how to use/run_
+2.  _add any other steps required or examples of how to use/run_
 
 
 ## License
