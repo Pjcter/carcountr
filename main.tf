@@ -34,7 +34,9 @@ resource "aws_instance" "ffmpeg_server" {
   instance_type = "t2.micro"
   user_data	= file("docker.sh")
   key_name = "${aws_key_pair.carcountr_key_pair.id}"
+  subnet_id = "${aws_subnet.private_subnet.id}"
   vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
+
 
   tags = {
     Name = "ExampleAppServerInstance"
@@ -97,30 +99,17 @@ resource "aws_dynamodb_table" "carcountr-table" {
   billing_mode   = "PROVISIONED"
   read_capacity  = 20
   write_capacity = 20
-  range_key      = "FrameID"
-
-  attribute {
-    name = "FrameID"
-    type = "S"
-  }
+  hash_key       = "Data"
+  range_key      = "Timestamp"
 
   attribute {
     name = "Data"
     type = "S"
   }
 
-  ttl {
-    attribute_name = "TimeToExist"
-    enabled        = false
-  }
-
-  global_secondary_index {
-    name               = "FrameIDIndex"
-    hash_key           = "FrameID"
-    range_key          = "Data"
-    write_capacity     = 10
-    read_capacity      = 10
-    projection_type    = "INCLUDE"
+  attribute {
+    name = "Timestamp"
+    type = "S"
   }
 
   tags = {
