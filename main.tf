@@ -72,7 +72,7 @@ resource "aws_lambda_function" "carcountr_frame_translation" {
   role          = "${var.LAB_ROLE_ARN}"
   handler       = "handler.lambda_handler"
 
-  source_code_hash = filebase64sha256("translate_payload.zip")
+  source_code_hash = data.archive_file.translate_lambda_package.output_base64sha256
 
   runtime = "python3.6"
 
@@ -86,7 +86,7 @@ resource "aws_lambda_function" "carcountr_frame_translation" {
 /* Code for Lambda Function */
 data "archive_file" "translate_lambda_package" {  
   type = "zip"  
-  source_file = "${path.module}/code/lambda-translate/handler.py" 
+  source_file = "code/lambda-translate/handler.py" 
   output_path = "translate_payload.zip"
 }
 
@@ -136,7 +136,7 @@ resource "aws_lambda_function" "carcountr_api" {
   role          = "${var.LAB_ROLE_ARN}"
   handler       = "handler.lambda_handler"
 
-  source_code_hash = filebase64sha256("api_payload.zip")
+  source_code_hash = data.archive_file.api_lambda_package.output_base64sha256
   runtime = "python3.6"
 
   environment {
