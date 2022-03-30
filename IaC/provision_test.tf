@@ -14,17 +14,68 @@ provider "aws" {
   region  = "us-east-1"
 }
 
-# docker run jrottenberg/ffmpeg -stats -i "https://pa511wmedia102.ilchost.com/live/CAM-11-154.stream/chunklist_w1230942918.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9My8xMS8yMDIyIDE6MDQ6MzQgQU0maGFzaF92YWx1ZT1yY2VRY2tpc1BURDh1UEhxSVJOV21BPT0mdmFsaWRtaW51dGVzPTIwJmlkPTczLjE1NC44MC4yMjA%3D" -vf fps=1/60 test_%04d.jpg
+# docker run jrottenberg/ffmpeg -stats -i "https://49-d2.divas.cloud/CHAN-8293/CHAN-8293_1.stream/chunklist_w1134282071_tkdmRzd3p0b2tlbmhhc2g9ZDRLS3Z0SENQdlNkS2JOcE9mRmtfUENVR1ZITGlsRS1KNGgyYjRwY2dobz0=.m3u8" -vf fps=1/60 test_%04d.jpg
+# docker run jrottenberg/ffmpeg -i "https://pa511wmedia102.ilchost.com/live/CAM-11-154.stream/chunklist_w983027938.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9My8zMC8yMDIyIDM6NTI6MjggQU0maGFzaF92YWx1ZT1QUGFKbnlrMmRCMVV5cVptK1FOaDNRPT0mdmFsaWRtaW51dGVzPTIwJmlkPTEwNC4yMjkuMzAuODE%3D" -vframes 1 -q:v 2 -f image2pipe - | aws s3 cp - s3://ffmpeg-tests/test2.jpg
 resource "aws_instance" "ffmpeg_server" {
   ami           = "ami-0c293f3f676ec4f90"
   instance_type = "t2.micro"
   user_data	= file("docker.sh")
+  iam_instance_profile = "${aws_iam_instance_profile.ffmpeg_profile.name}"
   key_name = "terra_ffmpeg"
   vpc_security_group_ids = [aws_security_group.main.id]
 
   tags = {
     Name = "ExampleAppServerInstance"
   }
+}
+
+resource "aws_iam_role" "ffmpeg_role" {
+  name = "ffmpeg_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+
+  tags = {
+      tag-key = "tag-value"
+  }
+}
+
+resource "aws_iam_instance_profile" "ffmpeg_profile" {
+  name = "ffmpeg_profile"
+  role = "${aws_iam_role.ffmpeg_role.name}"
+}
+
+resource "aws_iam_role_policy" "s3_policy" {
+  name = "s3_policy"
+  role = "${aws_iam_role.ffmpeg_role.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_key_pair" "deployer" {
