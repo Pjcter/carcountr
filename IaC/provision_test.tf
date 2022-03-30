@@ -9,23 +9,49 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
+variable "cameraname" {
+  type = string
+}
+variable "cameraurl" {
+  type = string
+}
+
 provider "aws" {
   profile = "default"
   region  = "us-east-1"
 }
+
+# terraform apply -var="cameraname=NAME" -var"cameraurl=URL"
 
 # docker run jrottenberg/ffmpeg -stats -i "https://49-d2.divas.cloud/CHAN-8293/CHAN-8293_1.stream/chunklist_w1134282071_tkdmRzd3p0b2tlbmhhc2g9ZDRLS3Z0SENQdlNkS2JOcE9mRmtfUENVR1ZITGlsRS1KNGgyYjRwY2dobz0=.m3u8" -vf fps=1/60 test_%04d.jpg
 # docker run jrottenberg/ffmpeg -i "https://pa511wmedia102.ilchost.com/live/CAM-11-154.stream/chunklist_w983027938.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9My8zMC8yMDIyIDM6NTI6MjggQU0maGFzaF92YWx1ZT1QUGFKbnlrMmRCMVV5cVptK1FOaDNRPT0mdmFsaWRtaW51dGVzPTIwJmlkPTEwNC4yMjkuMzAuODE%3D" -vframes 1 -q:v 2 -f image2pipe - | aws s3 cp - s3://ffmpeg-tests/test2.jpg
 resource "aws_instance" "ffmpeg_server" {
   ami           = "ami-0c293f3f676ec4f90"
   instance_type = "t2.micro"
-  user_data	= file("docker.sh")
+  user_data = <<EOF
+#!/bin/bash
+set -ex
+sudo yum update -y
+sudo amazon-linux-extras install docker
+echo "Docker installed successfully!"
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+echo "About to enter loop"
+while true
+do
+	sleep 5m
+    d=$(date +%Y-%m-%d-%H-%M-%S)
+    docker run jrottenberg/ffmpeg -i "${var.cameraurl}" -vframes 1 -q:v 2 -f image2pipe - | aws s3 cp - s3://ffmpeg-tests/$d.jpg
+    echo "Took picture"
+done
+--//--
+EOF
   iam_instance_profile = "${aws_iam_instance_profile.ffmpeg_profile.name}"
   key_name = "terra_ffmpeg"
   vpc_security_group_ids = [aws_security_group.main.id]
 
   tags = {
-    Name = "ExampleAppServerInstance"
+    Name = var.cameraname
   }
 }
 
