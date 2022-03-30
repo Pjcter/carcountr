@@ -99,16 +99,16 @@ resource "aws_dynamodb_table" "carcountr-table" {
   billing_mode   = "PROVISIONED"
   read_capacity  = 20
   write_capacity = 20
-  hash_key       = "Data"
-  range_key      = "Timestamp"
+  hash_key       = "camera"
+  range_key      = "timestamp"
 
   attribute {
-    name = "Data"
-    type = "S"
+    name = "timestamp"
+    type = "N"
   }
-
+  
   attribute {
-    name = "Timestamp"
+    name = "camera"
     type = "S"
   }
 
