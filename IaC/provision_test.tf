@@ -40,7 +40,7 @@ echo "About to enter loop"
 counter=0
 while true
 do
-	sleep 1m
+	sleep 5m
     ((counter=counter+1))
     docker run jrottenberg/ffmpeg -i "${var.cameraurl}" -vframes 1 -q:v 2 -f image2pipe - | aws s3 cp - s3://ffmpeg-tests/${var.cameraname}_$counter.jpg
     echo "took picture $counter"
