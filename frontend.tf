@@ -64,3 +64,15 @@ resource "aws_s3_bucket_object" "website_files" {
   etag          = filemd5("${var.upload_directory}${each.value}")
   content_type  = lookup(var.mime_types, split(".", each.value)[length(split(".", each.value)) - 1])
 }
+
+resource "aws_s3_bucket_cors_configuration" "cors_config" {
+  bucket = aws_s3_bucket.react_bucket.bucket
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "HEAD"]
+    allowed_origins = ["*"]
+    expose_headers  = [""]
+    max_age_seconds = 3000
+  }
+}

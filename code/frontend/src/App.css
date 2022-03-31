@@ -85,6 +85,8 @@ option:hover{
   font-weight:bold;
   text-align:left;
   line-height:.5em;
+  display:flex;
+  flex-direction:row;
 }
 .Add-Cam{
   background-color:rgb(202, 202, 202);
@@ -93,4 +95,23 @@ option:hover{
 }
 .Add-Cam:hover{
   background-color:rgb(163, 163, 163);
+}
+.react-datepicker-wrapper{
+  width:10% !important;
+}
+.react-datepicker__input-container{
+  padding-top:15px;
+  padding-left:15px;
+  height:50%;
+  width:140% !important;
+}
+input{
+  background-color: #06142e !important;
+  color:rgb(176, 217, 255) !important;
+  border: none !important;
+  height:100% !important;
+  font-size:1.5em;
+  cursor: pointer;
+  width:100% !important;
+
 }

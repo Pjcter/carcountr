@@ -21,12 +21,22 @@ def lambda_handler(event, context):
             except:
                 return {
                     'statusCode': 400,
-                    'body' : json.dumps('Error: Query string missing parameters')
+                    'body' : json.dumps('Error: Query string missing parameters'),
+                    'headers' : {
+                                    'Access-Control-Allow-Headers': 'Content-Type',
+                                    'Access-Control-Allow-Origin': '*',
+                                    'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                    }
                 }
             frames = get_frames(camera, start, end)
             return {
                 'statusCode': 200,
-                'body' : json.dumps(frames)
+                'body' : json.dumps(frames),
+                'headers' : {
+                                'Access-Control-Allow-Headers': 'Content-Type',
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                }
             }
     elif '/camera' in path:
         body = {}
