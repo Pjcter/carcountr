@@ -1,8 +1,5 @@
-variable "bucket_name" {
-    default = "carcountr-frontend"
-}
 resource "aws_s3_bucket" "react_bucket" {
-    bucket = "${var.bucket_name}"
+    bucket = "${var.FRONTEND_BUCKET_NAME}"
     acl = "public-read"
 
     policy = <<EOF
@@ -16,7 +13,7 @@ resource "aws_s3_bucket" "react_bucket" {
                     "s3:getObject"
                 ],
                 "Effect": "Allow",
-                "Resource": "arn:aws:s3:::${var.bucket_name}/*",
+                "Resource": "arn:aws:s3:::${var.FRONTEND_BUCKET_NAME}/*",
                 "Principal": "*"
             }
         ]
