@@ -3,7 +3,7 @@
 resource "aws_lambda_function" "carcountr_api" {
   filename      = "api_payload.zip"
   function_name = "api_lambda"
-  role          = "${var.LAB_ROLE_ARN}"
+  role          = aws_iam_role.translate_lambda_role.arn
   handler       = "handler.lambda_handler"
 
   source_code_hash = data.archive_file.api_lambda_package.output_base64sha256
@@ -23,6 +23,26 @@ data "archive_file" "api_lambda_package" {
   output_path = "api_payload.zip"
 }
 
+/* Role for API Lambda */
+resource "aws_iam_role" "api_lambda_role" {
+  name = "api_lambda_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
 # API Gateway
 resource "aws_api_gateway_rest_api" "api" {
   name = "FrameAPI"

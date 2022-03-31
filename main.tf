@@ -9,25 +9,6 @@ terraform {
     required_version = ">= 0.14.9"
 }
 
-/* Frontend EC2 for hosting React application */
-resource "aws_instance" "frontend_ec2" {
-    ami           = "ami-0c293f3f676ec4f90"
-    instance_type = "t2.micro"
-    vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
-    key_name = "${aws_key_pair.carcountr_key_pair.id}"
-    subnet_id = "${aws_subnet.public_subnet.id}"
-    associate_public_ip_address = true
-
-    connection {
-        user = "${var.EC2_USER}"
-        private_key = "${file("${var.PRIVATE_KEY_PATH}")}"
-    }
-
-    tags = {
-      Name = "frontend_ec2"
-    }
-}
-
 /* Backend EC2 for hosting running ffmpeg */
 resource "aws_instance" "ffmpeg_server" {
   ami           = "ami-0c293f3f676ec4f90"
@@ -42,10 +23,8 @@ resource "aws_instance" "ffmpeg_server" {
     Name = "ExampleAppServerInstance"
   }
 }
-# docker run jrottenberg/ffmpeg -stats -i "https://pa511wmedia102.ilchost.com/live/CAM-11-154.stream/chunklist_w1230942918.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9My8xMS8yMDIyIDE6MDQ6MzQgQU0maGFzaF92YWx1ZT1yY2VRY2tpc1BURDh1UEhxSVJOV21BPT0mdmFsaWRtaW51dGVzPTIwJmlkPTczLjE1NC44MC4yMjA%3D" -vf fps=1/60 test_%04d.jpg
 
-
-/* Key pair for both EC2s */
+/* Key pair for EC2 */
 resource "aws_key_pair" "carcountr_key_pair" {
     key_name   = "carcountr"
     public_key = "${file(var.PUBLIC_KEY_PATH)}"
@@ -53,25 +32,19 @@ resource "aws_key_pair" "carcountr_key_pair" {
 
 /* S3 bucket for hosting frames */
 resource "aws_s3_bucket" "carcountr_bucket" {
-  bucket = "carcountr-bucket"
-
+  bucket = "${var.BACKEND_BUCKET_NAME}"
+  acl    = "private"
   tags = {
-    Name        = "carcountr-bucket"
+    Name        = "${var.BACKEND_BUCKET_NAME}"
     Environment = "Dev"
   }
 }
 
-resource "aws_s3_bucket_acl" "bucket_acl" {
-  bucket = aws_s3_bucket.carcountr_bucket.id
-  acl    = "private"
-}
-
 /* Lambda Function For Frame Translation*/
-
 resource "aws_lambda_function" "carcountr_frame_translation" {
   filename      = "translate_payload.zip"
   function_name = "translate_lambda"
-  role          = "${var.LAB_ROLE_ARN}"
+  role          = aws_iam_role.translate_lambda_role.arn
   handler       = "handler.lambda_handler"
 
   source_code_hash = data.archive_file.translate_lambda_package.output_base64sha256
@@ -90,6 +63,27 @@ data "archive_file" "translate_lambda_package" {
   type = "zip"  
   source_file = "code/lambda-translate/handler.py" 
   output_path = "translate_payload.zip"
+}
+
+/* Role for Translate Lambda */
+resource "aws_iam_role" "translate_lambda_role" {
+  name = "translate_lambda_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 }
 
 /* DynamoDB Table */
