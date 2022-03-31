@@ -1,32 +1,44 @@
-import json
 import boto3
-import logging
+from decimal import Decimal
+import time
+import urllib.request
+import urllib.parse
+import urllib.error
 
-# boto3 S3 initialization
-s3_client = boto3.client("s3")
+print('Loading function')
 
+rekognition = boto3.client('rekognition')
+
+def detect_labels(bucket, key):
+    response = rekognition.detect_labels(Image={"S3Object": {"Bucket": bucket, "Name": key}})
+
+    # Note: role used for executing this Lambda function should have write access to the table.
+    table = boto3.resource('dynamodb').Table('test_table')
+    labels = [{'Name': label_prediction['Name'], 'Occurrences': len(label_prediction['Instances'])} for label_prediction in response['Labels']]
+    count = 0
+    for element in labels:
+        if element['Name'] == 'Car':
+            count = element['Occurrences']
+    table.put_item(Item={'camera': key, 'timestamp': int(time.time()), 'cars': count})
+    return response
 
 def lambda_handler(event, context):
 
-    # event contains all information about uploaded object
-    print("Event :", event)
+    # Get the object from the event
+    bucket = event['Records'][0]['s3']['bucket']['name']
+    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
+    try:
 
-    # Bucket Name where file was uploaded
-    source_bucket_name = event['Records'][0]['s3']['bucket']['name']
+        # Calls rekognition DetectLabels API to detect labels in S3 object
+        response = detect_labels(bucket, key)
 
-    # Filename of object (with path)
-    file_key_name = event['Records'][0]['s3']['object']['key']
+        # Print response to console.
+        print(response)
 
-    #####
-
-    #TODO: Take file from S3 bucket and submit to Rekognition, get results, and then store the results into DynamoDB
-
-    ######
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from S3 events Lambda!')
-}
+        return response
+    except Exception as e:
+        print(e)
+        print("Error processing object {} from bucket {}. ".format(key, bucket) +
+              "Make sure your object and bucket exist and your bucket is in the same region as this function.")
+        raise e
+        
