@@ -9,3 +9,7 @@ variable "PUBLIC_KEY_PATH" {
 variable "LAB_ROLE_ARN" {
     default = "arn:aws:iam::272092739532:role/LabRole"
 }
+
+variable "ACCOUNT_ID" {
+    default = "272092739532"
+}

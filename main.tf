@@ -117,33 +117,3 @@ resource "aws_dynamodb_table" "carcountr-table" {
     Environment = "production"
   }
 }
-
-/* Lambda Function For Frontend API*/
-resource "aws_lambda_function" "carcountr_api" {
-  filename      = "api_payload.zip"
-  function_name = "api_lambda"
-  role          = "${var.LAB_ROLE_ARN}"
-  handler       = "handler.lambda_handler"
-
-  source_code_hash = data.archive_file.api_lambda_package.output_base64sha256
-  runtime = "python3.6"
-
-  environment {
-    variables = {
-      foo = "bar"
-    }
-  }
-}
-
-/* Code for Lambda Function */
-data "archive_file" "api_lambda_package" {  
-  type = "zip"  
-  source_file = "${path.module}/code/lambda-api/handler.py" 
-  output_path = "api_payload.zip"
-}
-
-/* API Gateway */
-resource "aws_api_gateway_rest_api" "carcountr_api_gateway" {
-  name = "carcountr_api"
-}
-
