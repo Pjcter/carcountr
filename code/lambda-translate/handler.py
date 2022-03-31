@@ -19,7 +19,7 @@ def detect_labels(bucket, key):
     for element in labels:
         if element['Name'] == 'Car':
             count = element['Occurrences']
-    table.put_item(Item={'camera': key, 'timestamp': int(time.time()), 'cars': count})
+    table.put_item(Item={'camera': key, 'timestamp': int(time.time()), 'cars': count, 's3_url': bucket})
     return response
 
 def lambda_handler(event, context):
