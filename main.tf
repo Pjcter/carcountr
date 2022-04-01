@@ -86,6 +86,52 @@ resource "aws_iam_role" "translate_lambda_role" {
 EOF
 }
 
+/* Set up trigger for S3 bucket and translte lambda */
+
+resource "aws_lambda_permission" "allow_bucket" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.carcountr_frame_translation.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.carcountr_bucket.arn
+}
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.carcountr_bucket.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.carcountr_frame_translation.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "AWSLogs/"
+    filter_suffix       = ".log"
+  }
+
+  depends_on = [aws_lambda_permission.allow_bucket]
+}
+/* Give Transltae Lambda permissions to write to DynamoDB */
+
+resource "aws_iam_policy" "translate_policy" {
+  name        = "translate-policy"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "dynamodb:PutItem"
+        ],
+        "Resource": ["arn:aws:dynamodb:${var.AWS_REGION}:${var.ACCOUNT_ID}:table/*"]
+      }
+    ]
+}
+EOF
+}
+resource "aws_iam_role_policy_attachment" "translate-attach" {
+  role       = aws_iam_role.translate_lambda_role.name
+  policy_arn = aws_iam_policy.translate_policy.arn
+}
+
 /* DynamoDB Table */
 
 resource "aws_dynamodb_table" "carcountr-table" {

@@ -13,7 +13,7 @@ def detect_labels(bucket, key):
     response = rekognition.detect_labels(Image={"S3Object": {"Bucket": bucket, "Name": key}})
 
     # Note: role used for executing this Lambda function should have write access to the table.
-    table = boto3.resource('dynamodb').Table('test_table')
+    table = boto3.resource('dynamodb').Table('FrameData')
     labels = [{'Name': label_prediction['Name'], 'Occurrences': len(label_prediction['Instances'])} for label_prediction in response['Labels']]
     count = 0
     for element in labels:
