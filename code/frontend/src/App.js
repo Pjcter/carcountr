@@ -68,21 +68,54 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src="car.png" alt="CarCountr Logo" width={150}></img>
-        <div>
+        <img src="car.png" alt="CarCountr Logo" width={90} height={70}></img>
           <h1>Car Countr</h1>
-          <h4>Pick a camera to see its historical car data</h4>
-        </div>
       </header>
       <body>
         <div className="Body-pane">
           <div className="Select-pane">
-            <p className="Title">Select a Camera</p>
+            <p className="Title">Select a Livestream</p>
             <div className="Select-box">
-              <select id="mySelect" size={10}>
-                <option>St. Peters Ave Intersection, Miami FL</option>
-                <option className="Add-Cam" onClick={addCamera}> + Add a Camera</option>
-              </select>
+              <table id="mySelect">
+                <tr className="selected">
+                  <td><img src="cam-icon.png" width={50} alt="cam"/></td>
+                  <td><p>St. Peters Ave Intersection, Miami FL</p></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td></td>
+                </tr>
+                <tr onClick={addCamera} className="Add-Cam">
+                  <td><img src="add-cam.png" width={50} alt="cam"/></td>
+                  <td>Add a Camera</td>
+                </tr>
+              </table>
             </div>
           </div>
           <div className="Graph-pane">
@@ -96,7 +129,7 @@ function App() {
                   }
                   else{
                     return (
-                      <LineChart className="Chart" width={1200} height={550} data={data}>
+                      <LineChart className="Chart" width={1000} height={560} data={data}>
                       <Line type="monotone" dataKey="uv" stroke="#8884d8" />
                       <CartesianGrid stroke="#2a406d"/>
                       <XAxis
@@ -126,7 +159,7 @@ function App() {
                         <Label value="Time of Day" offset={5} position="insideBottom" fontSize="1.5em" stroke="#2a406d"/>
                       </XAxis>
                       <YAxis  >
-                        <Label value="Cars" position="insideLeft" fontSize="1.5em" angle={-90} stroke="#2a406d"/>
+                        <Label value="Cars" position="insideLeft" fontSize="1.5em" offset={-20} stroke="#2a406d"/>
                       </YAxis>
                     </LineChart>
                     )
