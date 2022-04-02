@@ -197,6 +197,15 @@ resource "aws_iam_policy" "translate_policy" {
           "rekognition:*"
         ],
         "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "Resource": "*"
       }
     ]
 }

@@ -56,6 +56,15 @@ resource "aws_iam_policy" "api_policy" {
           "dynamodb:Query"
         ],
         "Resource": ["arn:aws:dynamodb:${var.AWS_REGION}:${var.ACCOUNT_ID}:table/*"]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "Resource": "*"
       }
     ]
 }
