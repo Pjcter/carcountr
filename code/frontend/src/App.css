@@ -1,0 +1,143 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #2a406d;
+  min-height: 10vh;
+  max-height:10vh;
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+  text-align:left;
+  padding-left:2%;
+  gap:20px;
+  font-size: 1.5em;
+  line-height:.7em;
+}
+h1{
+  color: rgb(255, 255, 255);
+  font-family:'Segoe UI'
+}
+h4{
+  color:rgb(195, 195, 195);
+  font-family:Arial, Helvetica, sans-serif
+}
+.Body-pane{
+  display:flex;
+  flex-direction:row;
+  padding-top:30px;
+  min-height: 90vh;
+  max-height:90vh;
+  background: rgb(6,20,46);
+  background: linear-gradient(90deg, rgba(6,20,46,1) 0%, rgba(6,4,84,1) 81%, rgba(6,20,46,1) 100%);  
+}
+.Select-pane{
+  width:25%;
+  padding-left:40px;
+  padding-bottom:100px;
+  border-radius:25px
+}
+table{
+  width:100%;
+  height:100%;
+  background-color:rgb(224, 244, 255);
+  cursor:pointer;
+  border-collapse:collapse;
+  border-radius:25px
+}
+tr{
+  height:40px;
+  padding-top: 20px;
+  padding-left:5px;
+  color: #1d1f21;
+  background-color:rgb(224, 244, 255);
+  text-align:left;
+  line-height:.5em;
+  border-bottom:3px solid rgb(173, 212, 255);
+  font-size:90%;
+  font-family:Arial, Helvetica, sans-serif
+}
+tr:hover{
+  background-color:rgb(84, 166, 255);
+}
+.selected{
+  background-color:rgb(150, 201, 255);
+}
+.Graph-pane{
+  width:75%;
+  padding-left:40px;
+  padding-right:40px;
+  padding-bottom:100px;
+  border-radius:25px;
+}
+.Graph-box, .Select-box{
+  height:90%;
+  background-color: rgb(85, 107, 136);
+  padding:15px;
+  border-radius:25px
+}
+.Chart{
+  background-color:rgb(224, 244, 255);
+  min-width:100%;
+  min-height:100%;
+  max-height:100%;
+  max-width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius:25px;
+}
+.Title{
+  color:white;
+  font-size:1.5em;
+  font-family:'Segoe UI';
+  font-weight:bold;
+  text-align:left;
+  line-height:.5em;
+  display:flex;
+  flex-direction:row;
+}
+.Add-Cam{
+  background-color:rgb(202, 202, 202);
+  color:rgb(73, 73, 73);
+  border:none;
+}
+.Add-Cam:hover{
+  background-color:rgb(163, 163, 163);
+}
+.react-datepicker-wrapper{
+  width:10% !important;
+}
+.react-datepicker__input-container{
+  padding-top:15px;
+  padding-left:15px;
+  height:50%;
+  width:140% !important;
+}
+input{
+  background-color: transparent !important;
+  color:rgb(176, 217, 255) !important;
+  border: none !important;
+  height:100% !important;
+  font-size:100%;
+  cursor: pointer;
+  width:100% !important;
+
+}
+input:hover{
+  color:rgb(215, 246, 255) !important;
+}
+tr:first-child td:first-child{
+  border-top-left-radius: 25px;
+}
+tr:first-child td:last-child{
+  border-top-right-radius: 25px;
+}
+tr:last-child td:first-child{
+  border-bottom-left-radius: 25px;
+}
+tr:last-child td:last-child{
+  border-bottom-right-radius: 25px;
+}
