@@ -31,7 +31,7 @@ function App() {
   },[])
 
   const [data, setData] = useState([])
-  const [cameraName, setCameraName] = useState('camera_1')
+  const [cameraName, setCameraName] = useState('camera')
   const [date, setDate] = useState(new Date())
 
   const getData = function(camera_name, date){
