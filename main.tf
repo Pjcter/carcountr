@@ -1,38 +1,108 @@
 terraform {
-    required_providers {
-        aws = {
-        source  = "hashicorp/aws"
-        version = "~> 3.27"
-        }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
     }
-
-    required_version = ">= 0.14.9"
-}
-
-/* Backend EC2 for hosting running ffmpeg */
-resource "aws_instance" "ffmpeg_server" {
-  ami           = "ami-0c293f3f676ec4f90"
-  instance_type = "t2.micro"
-  user_data	= file("docker.sh")
-  key_name = "${aws_key_pair.carcountr_key_pair.id}"
-  subnet_id = "${aws_subnet.private_subnet.id}"
-  vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
-
-
-  tags = {
-    Name = "ExampleAppServerInstance"
   }
+
+  required_version = ">= 0.14.9"
 }
+
+# /* Backend EC2 for hosting running ffmpeg */
+# resource "aws_instance" "ffmpeg_server" {
+#   ami           = "ami-0c293f3f676ec4f90"
+#   instance_type = "t2.micro"
+#   user_data = <<EOF
+# #!/bin/bash
+# set -ex
+# sudo yum update -y
+# sudo amazon-linux-extras install docker
+# echo "Docker installed successfully!"
+# sudo service docker start
+# sudo usermod -a -G docker ec2-user
+# echo "About to enter loop"
+# counter=0
+# while true
+# do
+# 	sleep 5m
+#     ((counter=counter+1))
+#     docker run jrottenberg/ffmpeg -i "${var.cameraurl}" -vframes 1 -q:v 2 -f image2pipe - | aws s3 cp - s3://${var.BACKEND_BUCKET_NAME}/${var.cameraname}_$counter.jpg
+#     echo "took picture $counter"
+# done
+# --//--
+# EOF
+#   iam_instance_profile = "${aws_iam_instance_profile.ffmpeg_profile.name}"
+#   key_name = "${aws_key_pair.carcountr_key_pair.id}"
+#   subnet_id = "${aws_subnet.private_subnet.id}"
+#   vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
+
+#   tags = {
+#     Name = "FFmpeg_Server"
+#   }
+# }
+
+# /* Backend ffmpeg server iam role */
+# resource "aws_iam_role" "ffmpeg_role" {
+#   name = "ffmpeg_role"
+
+#   assume_role_policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Action": "sts:AssumeRole",
+#       "Principal": {
+#         "Service": "ec2.amazonaws.com"
+#       },
+#       "Effect": "Allow",
+#       "Sid": ""
+#     }
+#   ]
+# }
+# EOF
+
+#   tags = {
+#       tag-key = "tag-value"
+#   }
+# }
+
+# /* Backend ffmpeg server iam instance profile */
+# resource "aws_iam_instance_profile" "ffmpeg_profile" {
+#   name = "ffmpeg_profile"
+#   role = "${aws_iam_role.ffmpeg_role.name}"
+# }
+
+# /* Backend ffmpeg server S3 access */
+# resource "aws_iam_role_policy" "s3_policy" {
+#   name = "s3_policy"
+#   role = "${aws_iam_role.ffmpeg_role.id}"
+
+#   policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Action": [
+#         "s3:*"
+#       ],
+#       "Effect": "Allow",
+#       "Resource": "*"
+#     }
+#   ]
+# }
+# EOF
+# }
 
 /* Key pair for EC2 */
 resource "aws_key_pair" "carcountr_key_pair" {
-    key_name   = "carcountr"
-    public_key = "${file(var.PUBLIC_KEY_PATH)}"
+  key_name   = "carcountr"
+  public_key = file(var.PUBLIC_KEY_PATH)
 }
 
 /* S3 bucket for hosting frames */
 resource "aws_s3_bucket" "carcountr_bucket" {
-  bucket = "${var.BACKEND_BUCKET_NAME}"
+  bucket = var.BACKEND_BUCKET_NAME
   acl    = "private"
   tags = {
     Name        = "${var.BACKEND_BUCKET_NAME}"
@@ -59,9 +129,9 @@ resource "aws_lambda_function" "carcountr_frame_translation" {
 }
 
 /* Code for Lambda Function */
-data "archive_file" "translate_lambda_package" {  
-  type = "zip"  
-  source_file = "code/lambda-translate/handler.py" 
+data "archive_file" "translate_lambda_package" {
+  type        = "zip"
+  source_file = "code/lambda-translate/handler.py"
   output_path = "translate_payload.zip"
 }
 
@@ -105,10 +175,10 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
   depends_on = [aws_lambda_permission.allow_bucket]
 }
-/* Give Transltae Lambda permissions to write to DynamoDB */
+/* Give Translate Lambda permissions to write to DynamoDB */
 
 resource "aws_iam_policy" "translate_policy" {
-  name        = "translate-policy"
+  name = "translate-policy"
 
   policy = <<EOF
 {
@@ -151,14 +221,14 @@ resource "aws_dynamodb_table" "carcountr-table" {
     name = "timestamp"
     type = "N"
   }
-  
+
   attribute {
     name = "camera"
     type = "S"
   }
 
   tags = {
-    Name        = "dynamodb-table-1"
+    Name        = "FrameData"
     Environment = "production"
   }
 }

@@ -1,8 +1,8 @@
 resource "aws_s3_bucket" "react_bucket" {
-    bucket = "${var.FRONTEND_BUCKET_NAME}"
-    acl = "public-read"
+  bucket = var.FRONTEND_BUCKET_NAME
+  acl    = "public-read"
 
-    policy = <<EOF
+  policy = <<EOF
     {
         "Id": "bucket_policy_site",
         "Version": "2012-10-17",
@@ -20,18 +20,18 @@ resource "aws_s3_bucket" "react_bucket" {
     }
     EOF
 
-    website {
-        index_document = "index.html"
-        error_document = "index.html"
-    }
+  website {
+    index_document = "index.html"
+    error_document = "index.html"
+  }
 }
 
 output "website_domain" {
-    value = "${aws_s3_bucket.react_bucket.website_domain}"
+  value = aws_s3_bucket.react_bucket.website_domain
 }
 
 output "website_endpoint" {
-    value = "${aws_s3_bucket.react_bucket.website_endpoint}"
+  value = aws_s3_bucket.react_bucket.website_endpoint
 }
 
 variable "upload_directory" {
@@ -40,29 +40,29 @@ variable "upload_directory" {
 
 variable "mime_types" {
   default = {
-    htm   = "text/html"
-    html  = "text/html"
-    css   = "text/css"
-    ttf   = "font/ttf"
-    js    = "application/javascript"
-    map   = "application/javascript"
-    json  = "application/json"
-    png = "image/png"
-    ico = "image/x-icon"
-    txt = "text/plain"
-    svg = "image/svg+xml"
-    
+    htm  = "text/html"
+    html = "text/html"
+    css  = "text/css"
+    ttf  = "font/ttf"
+    js   = "application/javascript"
+    map  = "application/javascript"
+    json = "application/json"
+    png  = "image/png"
+    ico  = "image/x-icon"
+    txt  = "text/plain"
+    svg  = "image/svg+xml"
+
   }
 }
 
 resource "aws_s3_bucket_object" "website_files" {
-  for_each      = fileset(var.upload_directory, "**/*.*")
-  bucket        = aws_s3_bucket.react_bucket.bucket
-  key           = replace(each.value, var.upload_directory, "")
-  source        = "${var.upload_directory}${each.value}"
-  acl           = "public-read"
-  etag          = filemd5("${var.upload_directory}${each.value}")
-  content_type  = lookup(var.mime_types, split(".", each.value)[length(split(".", each.value)) - 1])
+  for_each     = fileset(var.upload_directory, "**/*.*")
+  bucket       = aws_s3_bucket.react_bucket.bucket
+  key          = replace(each.value, var.upload_directory, "")
+  source       = "${var.upload_directory}${each.value}"
+  acl          = "public-read"
+  etag         = filemd5("${var.upload_directory}${each.value}")
+  content_type = lookup(var.mime_types, split(".", each.value)[length(split(".", each.value)) - 1])
 }
 
 resource "aws_s3_bucket_cors_configuration" "cors_config" {

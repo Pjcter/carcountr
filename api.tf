@@ -7,7 +7,7 @@ resource "aws_lambda_function" "carcountr_api" {
   handler       = "handler.lambda_handler"
 
   source_code_hash = data.archive_file.api_lambda_package.output_base64sha256
-  runtime = "python3.6"
+  runtime          = "python3.6"
 
   environment {
     variables = {
@@ -17,9 +17,9 @@ resource "aws_lambda_function" "carcountr_api" {
 }
 
 /* Code for Lambda Function */
-data "archive_file" "api_lambda_package" {  
-  type = "zip"  
-  source_file = "${path.module}/code/lambda-api/handler.py" 
+data "archive_file" "api_lambda_package" {
+  type        = "zip"
+  source_file = "${path.module}/code/lambda-api/handler.py"
   output_path = "api_payload.zip"
 }
 
@@ -28,23 +28,23 @@ resource "aws_iam_role" "api_lambda_role" {
   name = "api_lambda_role"
 
   assume_role_policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Action": "sts:AssumeRole",
-        "Principal": {
-          "Service": "lambda.amazonaws.com"
-        },
-        "Effect": "Allow",
-        "Sid": ""
-      }
-    ]
-  }
-  EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 }
 resource "aws_iam_policy" "api_policy" {
-  name        = "api-policy"
+  name = "api-policy"
 
   policy = <<EOF
 {
@@ -104,6 +104,10 @@ resource "aws_lambda_permission" "apigw_lambda" {
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
+  depends_on = [
+    aws_api_gateway_method.method,
+    aws_api_gateway_integration.integration
+  ]
   rest_api_id = aws_api_gateway_rest_api.api.id
 
   triggers = {
@@ -122,13 +126,13 @@ resource "aws_api_gateway_stage" "prod" {
 }
 
 output "api_endpoint" {
-    value = "${aws_api_gateway_deployment.deployment.invoke_url}"
+  value = aws_api_gateway_deployment.deployment.invoke_url
 }
 
 resource "aws_s3_bucket_object" "object" {
 
-  bucket = aws_s3_bucket.react_bucket.id
-  key    = "api_url"
-  acl    = "public-read"  # or can be "public-read"
+  bucket  = aws_s3_bucket.react_bucket.id
+  key     = "api_url"
+  acl     = "public-read" # or can be "public-read"
   content = "${aws_api_gateway_deployment.deployment.invoke_url}${aws_api_gateway_stage.prod.stage_name}"
 }
