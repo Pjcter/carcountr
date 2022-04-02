@@ -206,6 +206,16 @@ resource "aws_iam_policy" "translate_policy" {
           "logs:PutLogEvents"
         ],
         "Resource": "*"
+      },
+      {
+          "Effect": "Allow",
+          "Action": [
+              "s3:GetObject",
+              "s3:GetObjectVersion"
+          ],
+          "Resource": [
+              "arn:aws:s3:::${var.BACKEND_BUCKET_NAME}/*"
+          ]
       }
     ]
 }
