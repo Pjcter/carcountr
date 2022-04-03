@@ -53,7 +53,10 @@ resource "aws_iam_policy" "api_policy" {
       {
         "Effect": "Allow",
         "Action": [
-          "dynamodb:Query"
+          "dynamodb:Query",
+          "dynamodb:PutItem",
+          "dynamodb:Scan",
+          "dynamodb:DeleteItem"
         ],
         "Resource": ["arn:aws:dynamodb:${var.AWS_REGION}:${var.ACCOUNT_ID}:table/*"]
       },
@@ -85,18 +88,68 @@ resource "aws_api_gateway_resource" "frames_resource" {
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
+resource "aws_api_gateway_resource" "cameras_resource" {
+  path_part   = "cameras"
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.api.id
+}
 
-resource "aws_api_gateway_method" "method" {
+resource "aws_api_gateway_method" "frames_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.frames_resource.id
   http_method   = "GET"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "integration" {
+resource "aws_api_gateway_method" "cameras_get_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.cameras_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+resource "aws_api_gateway_method" "cameras_post_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.cameras_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+resource "aws_api_gateway_method" "cameras_delete_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.cameras_resource.id
+  http_method   = "DELETE"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "frames_integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.frames_resource.id
-  http_method             = aws_api_gateway_method.method.http_method
+  http_method             = aws_api_gateway_method.frames_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.carcountr_api.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "cameras_post_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.cameras_resource.id
+  http_method             = aws_api_gateway_method.cameras_post_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.carcountr_api.invoke_arn
+}
+resource "aws_api_gateway_integration" "cameras_delete_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.cameras_resource.id
+  http_method             = aws_api_gateway_method.cameras_delete_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.carcountr_api.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "cameras_get_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.cameras_resource.id
+  http_method             = aws_api_gateway_method.cameras_get_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.carcountr_api.invoke_arn
@@ -109,13 +162,17 @@ resource "aws_lambda_permission" "apigw_lambda" {
   principal     = "apigateway.amazonaws.com"
 
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
-  source_arn = "arn:aws:execute-api:${var.AWS_REGION}:${var.ACCOUNT_ID}:${aws_api_gateway_rest_api.api.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.frames_resource.path}"
+  source_arn = "arn:aws:execute-api:${var.AWS_REGION}:${var.ACCOUNT_ID}:${aws_api_gateway_rest_api.api.id}/*"
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
-    aws_api_gateway_method.method,
-    aws_api_gateway_integration.integration
+    aws_api_gateway_method.frames_method,
+    aws_api_gateway_integration.frames_integration,
+    aws_api_gateway_method.cameras_get_method,
+    aws_api_gateway_integration.cameras_get_integration,
+    aws_api_gateway_method.cameras_post_method,
+    aws_api_gateway_integration.cameras_post_integration,
   ]
   rest_api_id = aws_api_gateway_rest_api.api.id
 
@@ -138,10 +195,16 @@ output "api_endpoint" {
   value = aws_api_gateway_deployment.deployment.invoke_url
 }
 
-resource "aws_s3_bucket_object" "object" {
-
+resource "aws_s3_bucket_object" "api_route" {
   bucket  = aws_s3_bucket.react_bucket.id
   key     = "api_url"
-  acl     = "public-read" # or can be "public-read"
+  acl     = "public-read"
   content = "${aws_api_gateway_deployment.deployment.invoke_url}${aws_api_gateway_stage.prod.stage_name}"
+}
+
+resource "aws_s3_bucket_object" "ffmpeg_production" {
+  bucket  = aws_s3_bucket.react_bucket.id
+  key     = "ffmpeg.py"
+  acl     = "public-read"
+  content = file("ffmpeg.py")
 }

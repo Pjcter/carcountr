@@ -9,90 +9,90 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-# /* Backend EC2 for hosting running ffmpeg */
-# resource "aws_instance" "ffmpeg_server" {
-#   ami           = "ami-0c293f3f676ec4f90"
-#   instance_type = "t2.micro"
-#   user_data = <<EOF
-# #!/bin/bash
-# set -ex
-# sudo yum update -y
-# sudo amazon-linux-extras install docker
-# echo "Docker installed successfully!"
-# sudo service docker start
-# sudo usermod -a -G docker ec2-user
-# echo "About to enter loop"
-# counter=0
-# while true
-# do
-# 	sleep 5m
-#     ((counter=counter+1))
-#     docker run jrottenberg/ffmpeg -i "${var.cameraurl}" -vframes 1 -q:v 2 -f image2pipe - | aws s3 cp - s3://${var.BACKEND_BUCKET_NAME}/${var.cameraname}_$counter.jpg
-#     echo "took picture $counter"
-# done
-# --//--
-# EOF
-#   iam_instance_profile = "${aws_iam_instance_profile.ffmpeg_profile.name}"
-#   key_name = "${aws_key_pair.carcountr_key_pair.id}"
-#   subnet_id = "${aws_subnet.private_subnet.id}"
-#   vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
+/* Backend EC2 for hosting running ffmpeg */
+resource "aws_instance" "ffmpeg_server" {
+  depends_on = [
+    aws_s3_bucket.react_bucket
+  ]
+  ami           = "ami-0c293f3f676ec4f90"
+  instance_type = "t2.micro"
+  user_data = <<EOF
+#!/bin/bash
+set -ex
+sudo yum update -y
+sudo amazon-linux-extras install docker
+echo "Docker installed successfully!"
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+sudo yum -y install python-pip
+python3 -m pip install requests
+export API=${aws_api_gateway_deployment.deployment.invoke_url}${aws_api_gateway_stage.prod.stage_name}
+export BUCKET=${var.BACKEND_BUCKET_NAME}
+wget ${aws_s3_bucket.react_bucket.website_endpoint}/ffmpeg.py
+python3 ffmpeg.py
+--//--
+EOF
+  iam_instance_profile = "${aws_iam_instance_profile.ffmpeg_profile.name}"
+  key_name = "${aws_key_pair.carcountr_key_pair.id}"
+  subnet_id = "${aws_subnet.public_subnet.id}"
+  vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
 
-#   tags = {
-#     Name = "FFmpeg_Server"
-#   }
-# }
+  tags = {
+    Name = "FFmpeg_Server"
+  }
+}
 
-# /* Backend ffmpeg server iam role */
-# resource "aws_iam_role" "ffmpeg_role" {
-#   name = "ffmpeg_role"
+/* Backend ffmpeg server iam role */
+resource "aws_iam_role" "ffmpeg_role" {
+  name = "ffmpeg_role"
 
-#   assume_role_policy = <<EOF
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Action": "sts:AssumeRole",
-#       "Principal": {
-#         "Service": "ec2.amazonaws.com"
-#       },
-#       "Effect": "Allow",
-#       "Sid": ""
-#     }
-#   ]
-# }
-# EOF
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 
-#   tags = {
-#       tag-key = "tag-value"
-#   }
-# }
+  tags = {
+      tag-key = "tag-value"
+  }
+}
 
-# /* Backend ffmpeg server iam instance profile */
-# resource "aws_iam_instance_profile" "ffmpeg_profile" {
-#   name = "ffmpeg_profile"
-#   role = "${aws_iam_role.ffmpeg_role.name}"
-# }
+/* Backend ffmpeg server iam instance profile */
+resource "aws_iam_instance_profile" "ffmpeg_profile" {
+  name = "ffmpeg_profile"
+  role = "${aws_iam_role.ffmpeg_role.name}"
+}
 
-# /* Backend ffmpeg server S3 access */
-# resource "aws_iam_role_policy" "s3_policy" {
-#   name = "s3_policy"
-#   role = "${aws_iam_role.ffmpeg_role.id}"
+/* Backend ffmpeg server S3 access */
+resource "aws_iam_role_policy" "s3_policy" {
+  name = "s3_policy"
+  role = "${aws_iam_role.ffmpeg_role.id}"
 
-#   policy = <<EOF
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Action": [
-#         "s3:*"
-#       ],
-#       "Effect": "Allow",
-#       "Resource": "*"
-#     }
-#   ]
-# }
-# EOF
-# }
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
 
 /* Key pair for EC2 */
 resource "aws_key_pair" "carcountr_key_pair" {
@@ -226,9 +226,9 @@ resource "aws_iam_role_policy_attachment" "translate-attach" {
   policy_arn = aws_iam_policy.translate_policy.arn
 }
 
-/* DynamoDB Table */
+/* DynamoDB Tables */
 
-resource "aws_dynamodb_table" "carcountr-table" {
+resource "aws_dynamodb_table" "carcountr-frame-table" {
   name           = "FrameData"
   billing_mode   = "PROVISIONED"
   read_capacity  = 20
@@ -248,6 +248,30 @@ resource "aws_dynamodb_table" "carcountr-table" {
 
   tags = {
     Name        = "FrameData"
+    Environment = "production"
+  }
+}
+
+resource "aws_dynamodb_table" "carcountr-camera-table" {
+  name           = "CameraData"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "url"
+  range_key      = "camera"
+
+  attribute {
+    name = "url"
+    type = "S"
+  }
+
+  attribute {
+    name = "camera"
+    type = "S"
+  }
+
+  tags = {
+    Name        = "CameraData"
     Environment = "production"
   }
 }

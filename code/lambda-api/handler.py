@@ -38,8 +38,77 @@ def lambda_handler(event, context):
                                 'Access-Control-Allow-Methods': 'OPTIONS,GET'
                 }
             }
-    elif '/camera' in path:
+    elif '/cameras' in path:
         body = {}
+        if method == 'POST':
+            try:
+                camera = qs["camera"]
+                url = qs["url"]
+            except:
+                return {
+                    'statusCode': 400,
+                    'body' : json.dumps('Error: Query string missing parameters'),
+                    'headers' : {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST'
+                    }
+                }
+            response = put_camera(camera, url)
+            return {
+                'statusCode':200,
+                'body': json.dumps(response),
+                'headers': {
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST'
+                }
+            }
+        elif method == 'GET':
+            try:
+                response = get_cameras()
+            except:
+                return {
+                    'statusCode':400,
+                    'body': json.dumps('Error: DynamoDB scan failed'),
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                    }
+                }
+            return {
+                    'statusCode':200,
+                    'body': json.dumps(response),
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                    }
+            }
+        elif method == 'DELETE':
+            try:
+                camera = qs["camera"]
+                response = remove_camera(camera)
+            except:
+                return {
+                    'statusCode':400,
+                    'body': json.dumps('Error!'),
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                    }
+                }
+            return {
+                    'statusCode':200,
+                    'body': json.dumps(response),
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                    }
+            }
     elif '/about' in path:
         body = {}
     else:
@@ -71,3 +140,15 @@ def get_frames(camera, start, end):
         }
         frames.append(frame_data)
     return frames
+def put_camera(camera, url):
+    table = dynamodb.Table('CameraData')
+    response = table.put_item(Item={'camera': camera, 'url': url})
+    return response
+def remove_camera(camera):
+    table = dynamodb.Table('CameraData')
+    response = table.remove_item(Key={'camera': camera})
+    return response
+def get_cameras():
+    table= dynamodb.Table('CameraData')
+    response = table.scan()
+    return response
