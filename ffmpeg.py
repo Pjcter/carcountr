@@ -1,7 +1,6 @@
 import os
 import requests
 import time
-import uuid
 count = 0
 API = os.getenv('API')
 BUCKET = os.getenv('BUCKET')
