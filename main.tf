@@ -103,11 +103,29 @@ resource "aws_key_pair" "carcountr_key_pair" {
 /* S3 bucket for hosting frames */
 resource "aws_s3_bucket" "carcountr_bucket" {
   bucket = var.BACKEND_BUCKET_NAME
-  acl    = "private"
+  acl    = "public-read"
   tags = {
     Name        = "${var.BACKEND_BUCKET_NAME}"
     Environment = "Dev"
   }
+
+  policy = <<EOF
+    {
+        "Id": "bucket_policy_site",
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "bucket_policy_site_main",
+                "Action": [
+                    "s3:getObject"
+                ],
+                "Effect": "Allow",
+                "Resource": "arn:aws:s3:::${var.BACKEND_BUCKET_NAME}/*",
+                "Principal": "*"
+            }
+        ]
+    }
+  EOF
 }
 
 /* Lambda Function For Frame Translation*/

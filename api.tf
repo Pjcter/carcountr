@@ -200,6 +200,7 @@ resource "aws_s3_bucket_object" "api_route" {
   key     = "api_url"
   acl     = "public-read"
   content = "${aws_api_gateway_deployment.deployment.invoke_url}${aws_api_gateway_stage.prod.stage_name}"
+  depends_on = [aws_api_gateway_deployment.deployment]
 }
 
 resource "aws_s3_bucket_object" "ffmpeg_production" {
