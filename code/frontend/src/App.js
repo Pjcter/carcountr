@@ -81,8 +81,8 @@ export default function App() {
     })
   }
 
-  function deleteCamera(camera_name) {
-    fetch(apiUrl+`/cameras?camera=${camera_name}`, {
+  function deleteCamera(camera_name, url) {
+    fetch(apiUrl+`/cameras?camera=${camera_name}&url=${url}`, {
       method: 'DELETE'
     })
       .then(response => response.json())

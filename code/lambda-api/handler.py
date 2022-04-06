@@ -89,11 +89,12 @@ def lambda_handler(event, context):
         elif method == 'DELETE':
             try:
                 camera = qs["camera"]
-                response = remove_camera(camera)
-            except:
+                url = qs["url"]
+                response = remove_camera(camera, url)
+            except BaseException as e:
                 return {
                     'statusCode':400,
-                    'body': json.dumps('Error!'),
+                    'body': e,
                     'headers': {
                         'Access-Control-Allow-Headers': 'Content-Type',
                         'Access-Control-Allow-Origin': '*',
@@ -153,9 +154,9 @@ def put_camera(camera, url):
     table = dynamodb.Table('CameraData')
     response = table.put_item(Item={'camera': camera, 'url': url})
     return response
-def remove_camera(camera):
+def remove_camera(camera, url):
     table = dynamodb.Table('CameraData')
-    response = table.remove_item(Key={'camera': camera})
+    response = table.delete_item(Key={'camera': camera, 'url': url})
     return response
 def get_cameras():
     table= dynamodb.Table('CameraData')

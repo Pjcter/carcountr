@@ -18,7 +18,7 @@ export default function Camera(props) {
     function handleSubmit(e) {
         e.preventDefault();
         //Validate input here
-        props.delete(props.name)
+        props.delete(props.name, props.url)
         toggle();
     }
     return(
