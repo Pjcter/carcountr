@@ -199,6 +199,7 @@ resource "aws_s3_bucket_object" "api_route" {
   bucket  = aws_s3_bucket.react_bucket.id
   key     = "api_url"
   acl     = "public-read"
+  cache_control = "no-cache"
   content = "${aws_api_gateway_deployment.deployment.invoke_url}${aws_api_gateway_stage.prod.stage_name}"
   depends_on = [aws_api_gateway_deployment.deployment]
 }
