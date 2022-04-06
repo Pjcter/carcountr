@@ -120,6 +120,13 @@ resource "aws_api_gateway_method" "cameras_delete_method" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_method" "cameras_options_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.cameras_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
 resource "aws_api_gateway_integration" "frames_integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.frames_resource.id
@@ -150,6 +157,15 @@ resource "aws_api_gateway_integration" "cameras_get_integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.cameras_resource.id
   http_method             = aws_api_gateway_method.cameras_get_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.carcountr_api.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "cameras_options_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.cameras_resource.id
+  http_method             = aws_api_gateway_method.cameras_options_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.carcountr_api.invoke_arn

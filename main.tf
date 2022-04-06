@@ -27,6 +27,7 @@ sudo usermod -a -G docker ec2-user
 sudo yum -y install python-pip
 python3 -m pip install requests
 export API=${aws_api_gateway_deployment.deployment.invoke_url}${aws_api_gateway_stage.prod.stage_name}
+export DELAY=${var.FFMPEG_DELAY}
 export BUCKET=${var.BACKEND_BUCKET_NAME}
 wget ${aws_s3_bucket.react_bucket.website_endpoint}/ffmpeg.py
 python3 ffmpeg.py
@@ -108,7 +109,7 @@ resource "aws_s3_bucket" "carcountr_bucket" {
     Name        = "${var.BACKEND_BUCKET_NAME}"
     Environment = "Dev"
   }
-
+  force_destroy = true
   policy = <<EOF
     {
         "Id": "bucket_policy_site",

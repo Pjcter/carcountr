@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Card, CardTitle, Form, FormGroup, Input, Label, Modal, ModalHeader, ModalBody, Button} from 'reactstrap';
+import {Form, FormGroup, Input, Label, Modal, ModalHeader, ModalBody, Button} from 'reactstrap';
 
 export default function AddCamera(props) {
     const [modal, setModal] = useState(false);
@@ -35,17 +35,7 @@ export default function AddCamera(props) {
     }
     return(
         <div onClick={() => {clicked()}}>
-            <Card
-            body
-            inverse
-            style={{
-              backgroundColor: '#333',
-              borderColor: '#333'
-            }}>
-                <CardTitle>
-                    Add Camera
-                </CardTitle>
-            </Card>
+            <Button size="lg" className="btn-success">Add Camera</Button>
             <Modal isOpen={modal} toggle={toggle}>
                 <ModalHeader>
                     Add Camera
@@ -71,7 +61,7 @@ export default function AddCamera(props) {
                                 value={url}
                             />
                         </FormGroup>
-                        <Button onClick={(e) => {
+                        <Button className="btn-success" onClick={(e) => {
                             handleSubmit(e)
                         }}>Submit</Button>
                     </Form>

@@ -8,12 +8,11 @@
   max-height:10vh;
   display: flex;
   flex-direction: row;
-  align-items: left;
+  align-items: center;
   text-align:left;
   padding-left:2%;
   gap:20px;
   font-size: 1.5em;
-  line-height:.7em;
 }
 h1{
   color: rgb(255, 255, 255);
@@ -51,6 +50,12 @@ h4{
   background-color:rgb(224, 244, 255);
   border-radius:25px;
 }
+.Graph-box{
+  padding:30px;
+  padding-right:60px;
+  background-color:rgb(224, 244, 255);
+  border-radius:25px;
+}
 .Title{
   color:white;
   font-size:1.5em;
@@ -60,6 +65,7 @@ h4{
   line-height:.5em;
   display:flex;
   flex-direction:row;
+  align-items:center;
 }
 .Add-Cam{
   background-color:rgb(202, 202, 202);
@@ -69,11 +75,82 @@ h4{
 .Add-Cam:hover{
   background-color:rgb(163, 163, 163);
 }
+.react-datepicker-wrapper{
+  width:10% !important;
+  min-width:100px;
+}
+.react-datepicker__input-container{
+  padding-bottom:15px;
+  padding-left:15px;
+  width:140% !important;
+}
 input{
-
   height:100% !important;
   font-size:100%;
   cursor: pointer;
   width:100% !important;
-
+  background-color: transparent !important;
+  color:rgb(176, 217, 255) !important;
+  border: none !important;
+}
+input:hover{
+  color:rgb(215, 246, 255) !important;
+}
+.custom-tooltip{
+  background-color:#2a406d;
+  padding:10px;
+  border-radius:10px;
+  color:white;
+}
+.Add-cams-pane{
+  color:white;
+  justify-content:center;
+  width:100%;
+  padding-left:40%;
+  padding-right:40%;
+  text-align:center !important;
+}
+.Livestream{
+  background-color:rgb(224, 244, 255);
+  width:95%;
+}
+.Livestream-selected{
+  background-color:rgb(176, 217, 255) !important;
+  outline:5px solid #2a406d;
+  width:100%;
+  padding-right:8% !important;
+}
+.Livestream, .Livestream-selected{
+  border-radius:25px;
+  padding:3%;
+  cursor:pointer;
+  text-align:left;
+}
+.Livestream:hover{
+  outline:5px solid #2a406d;
+}
+.Livestream-header{
+  display:flex;
+  flex-direction:row;
+  justify-content:left;
+  gap:20px;
+}
+.Delete{
+  font-size:2em;
+  background-color:transparent;
+  border:1px solid rgb(145, 145, 145);
+  border-radius:15px;
+  padding-right:10px;
+  padding-left:10px;
+  padding-bottom:5px;
+  height:20%;
+  line-height:1em;
+  color:rgb(145, 145, 145);
+}
+.Delete:hover{
+  color:rgb(255, 72, 72);
+  background-color:rgb(250, 162, 162);
+}
+.form-control, .form-control:hover{
+  color:black !important;
 }

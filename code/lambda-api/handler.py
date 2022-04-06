@@ -97,7 +97,7 @@ def lambda_handler(event, context):
                     'headers': {
                         'Access-Control-Allow-Headers': 'Content-Type',
                         'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET,DELETE'
                     }
                 }
             return {
@@ -106,7 +106,16 @@ def lambda_handler(event, context):
                     'headers': {
                         'Access-Control-Allow-Headers': 'Content-Type',
                         'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET,DELETE'
+                    }
+            }
+        elif method == 'OPTIONS':
+            return {
+                    'statusCode':200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,GET,DELETE,POST'
                     }
             }
     elif '/about' in path:
