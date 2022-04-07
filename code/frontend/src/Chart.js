@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip} from 'recharts';
 import {Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
-
+import BoundedImage from './BoundedImage'
 
 export default function Chart(props) {
   const chart_data = props.data
@@ -145,7 +145,7 @@ export default function Chart(props) {
                     }
                 </ModalHeader>
                 <ModalBody>
-                    <img src={selectedDot.url} alt="livestream image" width="100%"></img>
+                    <BoundedImage boxes={selectedDot.boxes} url={selectedDot.url}></BoundedImage>
                     <br></br>
                     <br></br>
                         <Button className="btn-info" onClick={()=>{toggle(selectedDot);}}>
