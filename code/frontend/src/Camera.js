@@ -29,7 +29,7 @@ export default function Camera(props) {
                     <h2>{props.name}</h2>
                 </div>
                 <br></br>
-                <p style={{overflowWrap:"break-word"}}>{props.url}</p>
+                <p style={{overflow:"hidden"}}>{props.url}</p>
             </div>
             <Modal isOpen={modal} toggle={toggle}>
                 <ModalHeader>
