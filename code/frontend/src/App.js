@@ -38,7 +38,6 @@ export default function App() {
     let end = Math.floor(now.setHours(23,59,59) / 1000)
     fetch(apiUrl+`/frames?camera=${camera_name}&start=${start}&end=${end}`).then((response)=>{return response.json()}).then(
       (data) =>{
-        console.log(data)
         let new_data = []
         for(let frame of data){
           let time = new Date(parseInt(frame.timestamp)*1000)
@@ -52,7 +51,7 @@ export default function App() {
         setData(new_data)
       }
     )
-    setData(dev_data)
+    //setData(dev_data)
   }
 
   function fetchCameras() {
@@ -63,7 +62,7 @@ export default function App() {
       .then(data => {
           setCameras(data);
     })
-    setCameras(dev_cams)
+    //setCameras(dev_cams)
   }
 
   function changeCamera(name) {
@@ -91,7 +90,7 @@ export default function App() {
       .then(data => {
         fetchCameras()
     })
-    fetchCameras();
+   fetchCameras();
   }
 
   useEffect(()=>{
