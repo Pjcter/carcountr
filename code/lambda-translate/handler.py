@@ -4,6 +4,7 @@ import time
 import urllib.request
 import urllib.parse
 import urllib.error
+import json
 
 print('Loading function')
 
@@ -14,14 +15,16 @@ def detect_labels(bucket, key):
 
     # Note: role used for executing this Lambda function should have write access to the table.
     table = boto3.resource('dynamodb').Table('FrameData')
-    labels = [{'Name': label_prediction['Name'], 'Occurrences': len(label_prediction['Instances'])} for label_prediction in response['Labels']]
+    labels = [{'Name': label_prediction['Name'], 'Occurrences': len(label_prediction['Instances']), 'Boxes': label_prediction['Instances']} for label_prediction in response['Labels']]
     count = 0
+    boxes = []
     for element in labels:
         if element['Name'] == 'Car':
             count = element['Occurrences']
+            boxes = element['Boxes']
     s3_url = "https://"+bucket+".s3.amazonaws.com/"+key
     camera_name = key.split('_')[0]
-    table.put_item(Item={'camera': camera_name, 'timestamp': int(time.time()), 'cars': count, 's3_url': s3_url})
+    table.put_item(Item={'camera': camera_name, 'timestamp': int(time.time()), 'cars': count, 's3_url': s3_url, 'boxes': json.dumps(boxes)})
     return response
 
 def lambda_handler(event, context):

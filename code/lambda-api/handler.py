@@ -146,7 +146,8 @@ def get_frames(camera, start, end):
             "camera": item["camera"],
             "timestamp": str(item["timestamp"]),
             "cars": str(item["cars"]),
-            "s3_url": item["s3_url"]
+            "s3_url": item["s3_url"],
+            "boxes": item.get("boxes") if item.get("boxes") != None else "[]"
         }
         frames.append(frame_data)
     return frames

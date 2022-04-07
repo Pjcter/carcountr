@@ -12,7 +12,7 @@ import Chart from './Chart';
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_data = [{x:1649241000, uv:8, url:dev_url}, {x:1649273867, uv:6, url:dev_url}, {x:1649279000, uv:10, url:dev_url}]
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
-const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
+const BUCKET_URL = "https://carcountr-frontend.s3.amazonaws.com/api_url"
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
 
@@ -44,7 +44,8 @@ export default function App() {
           let datapoint = {
             x: frame.timestamp,
             uv: frame.cars,
-            url: frame.s3_url
+            url: frame.s3_url,
+            boxes: frame.boxes
           }
           new_data.push(datapoint)
         }
