@@ -53,7 +53,7 @@ export default function App() {
         setData(new_data)
       }
     )
-    //setData(dev_data)
+    setData(dev_data)
   }
 
   function fetchCameras() {
@@ -64,7 +64,7 @@ export default function App() {
       .then(data => {
           setCameras(data);
     })
-    //setCameras(dev_cams)
+    setCameras(dev_cams)
   }
 
   function changeCamera(name) {
