@@ -23,11 +23,12 @@ export default function Camera(props) {
     }
     return(
         <div onClick={() => {clicked()}}>
-            <div className={props.selected == props.name ? "Livestream-selected": "Livestream"}>
+            <div className={props.selected === props.name ? "Livestream-selected": "Livestream"}>
                 <div className="Livestream-header">
-                <div onClick={()=> {toggle();}} className="Delete">x</div>                <h2>{props.name}</h2>
-</div>
-                    <br></br>
+                    <div onClick={()=> {toggle();}} className="Delete">x</div>
+                    <h2>{props.name}</h2>
+                </div>
+                <br></br>
                 <p style={{overflowWrap:"break-word"}}>{props.url}</p>
             </div>
             <Modal isOpen={modal} toggle={toggle}>

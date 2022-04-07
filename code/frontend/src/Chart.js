@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip} from 'recharts';
 
+
 export default function Chart(props) {
 
     function CustomTooltip({ payload, label, active }) {
@@ -47,6 +48,7 @@ export default function Chart(props) {
       }
 
     return (
+      <div>
         <LineChart className="Chart" width={1100} height={600} data={props.data}>
         <Line type="monotone" dataKey="uv" stroke="#8884d8" />
         <CartesianGrid stroke="#2a406d"/>
@@ -81,5 +83,6 @@ export default function Chart(props) {
         </YAxis>
         <Tooltip content={<CustomTooltip />}/>
       </LineChart>
+      </div>
       )
 }

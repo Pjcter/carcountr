@@ -1,5 +1,4 @@
 import './App.css';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label} from 'recharts';
 import {useState, useEffect} from 'react' 
 import DatePicker from "react-datepicker";
 import AddCamera from './AddCamera';
@@ -12,8 +11,8 @@ import Chart from './Chart';
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_data = [{x:1649241000, uv:8, url:dev_url}, {x:1649273867, uv:6, url:dev_url}, {x:1649279000, uv:10, url:dev_url}]
-const dev_cams = {Count:2, Items: [{camera:"CamName",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
-const BUCKET_URL = "https://carcountr-frontend.s3.amazonaws.com/api_url"
+const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
+const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
 
@@ -82,6 +81,9 @@ export default function App() {
   }
 
   function deleteCamera(camera_name, url) {
+    if(cameraName === camera_name) {
+      setCameraName("");
+    }
     fetch(apiUrl+`/cameras?camera=${camera_name}&url=${url}`, {
       method: 'DELETE'
     })
@@ -106,24 +108,25 @@ export default function App() {
         <img src="car.png" alt="CarCountr Logo" width={90} height={70}></img>
           <h1>Car Countr</h1>
       </div>
-      { cameras !== "" && cameras !== undefined && cameras.Count > 0 ?
       <div className="Body-pane">
-          <div className="Select-pane">
-            <p className="Title">Select a Livestream</p>
-            <br></br>
-            {cameras !== "" && cameras !== undefined && cameras.Count > 0 ?
+          {cameras !== "" && cameras !== undefined && cameras.Count > 0 ?
+            <div className="Select-pane">
+              <p className="Title">Select a Livestream</p>
+              <br></br>
               <ListGroup>
               {Array.from(cameras.Items).map(camera => {
                 return(<div><Camera delete={deleteCamera} callback={changeCamera} url={camera.url} name={camera.camera} key={camera.camera} selected={cameraName}></Camera><br></br></div>);
               })}
               </ListGroup>
+              <AddCamera callback={addCamera}/>
+            </div>              
               :
-              <p>No cameras set up</p>
+              <div className="Message-pane">
+                <h1>No cameras set up!</h1>
+                <AddCamera callback={addCamera}/>
+              </div>
             }
-            <br></br>
-            <AddCamera callback={addCamera}/>
-          </div>
-          { cameraName !== "" ? 
+          { cameraName !== "" && cameras.Count > 0 ? 
           <div className="Graph-pane">
             <div className="Title"><p>24 Hour Data for&nbsp;</p><p style={{color:"rgb(176, 217, 255)"}}>{cameraName}&nbsp;</p><p>on :</p><DatePicker selected={date} onChange={(date) => setDate(date)} /></div>
             <div className="Graph-box">
@@ -135,15 +138,6 @@ export default function App() {
           </div>:<div></div>
           }
       </div>
-      :
-      <div className="Body-pane">
-        <div className="Add-cams-pane">
-        <p className="Title">No livestreams to count cars for</p>
-        <br></br>
-        <AddCamera callback={addCamera}/>
-        </div>
-      </div>
-      }
     </div>
   );
 }
