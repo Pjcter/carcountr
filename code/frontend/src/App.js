@@ -10,7 +10,7 @@ import Chart from './Chart';
 import Slider from './Slider';
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
-const DEV_DATA = true
+const DEV_DATA = false
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
 const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
@@ -62,7 +62,6 @@ export default function App() {
         (data) =>{
           let new_data = []
           for(let frame of data){
-            let time = new Date(parseInt(frame.timestamp)*1000)
             let datapoint = {
               x: frame.timestamp,
               uv: frame.cars,

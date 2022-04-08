@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip, ResponsiveContainer} from 'recharts';
-import {Modal, ModalHeader, ModalBody, Button, FormGroup, Input } from 'reactstrap';
+import {Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import BoundedImage from './BoundedImage'
 
 export default function Chart(props) {
