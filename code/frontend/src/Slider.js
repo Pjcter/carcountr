@@ -1,18 +1,22 @@
 import React from 'react';
 import {Form, FormGroup, Input, Label} from 'reactstrap';
-import {largestTriangleThreeBucket} from 'd3fc-sample'
+import {largestTriangleThreeBucket, modeMedian} from 'd3fc-sample'
 
 export default function Slider(props) {
     const sampler = largestTriangleThreeBucket();
+    const median = modeMedian();
 
     function downSample(amount) {
         if(amount < 1) {
             props.callback(props.normal);
         }
+        else if(amount == 10) {
+            props.callback(median(props.normal))
+        }
         else {
+            sampler.bucketSize(amount);
             sampler.x((d) => { return d.x; })
                 .y((d) => { return d.uv; });
-            sampler.bucketSize(amount*1.3);
 
             // Run the sampler
             props.callback(sampler(props.normal));

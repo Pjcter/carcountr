@@ -33,8 +33,9 @@ export default function App() {
     let finish = 240;
     let date = (Math.floor(Date.now()/86400000)*86400)-72000
     while(start < finish) {
+      console.log()
       let current_timestamp = date+(start*360)
-      let current_value = Math.floor(Math.random()*10)
+      let current_value = Math.floor(Math.random()*(120-Math.abs(start-120))/10)
       start++;
       data.push({x:current_timestamp, uv:current_value, url:dev_url})
     }
