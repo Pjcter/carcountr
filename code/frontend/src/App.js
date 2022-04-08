@@ -7,9 +7,10 @@ import Camera from './Camera';
 import "react-datepicker/dist/react-datepicker.css";
 import { ListGroup } from 'reactstrap';
 import Chart from './Chart';
+import Slider from './Slider';
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
-const DEV_DATA = false
+const DEV_DATA = true
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
 const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
@@ -20,8 +21,9 @@ export default function App() {
   const [apiUrl, setApiUrl] = useState("");
   const [cameras, setCameras] = useState("");
   const [data, setData] = useState([])
-  const [cameraName, setCameraName] = useState('')
+  const [cameraName, setCameraName] = useState("")
   const [date, setDate] = useState(new Date())
+  const [normal, setNormal] = useState([])
 
   const seedDevData = function() {
     let data = []
@@ -35,10 +37,11 @@ export default function App() {
       data.push({x:current_timestamp, uv:current_value, url:dev_url})
     }
     setData(data)
+    setNormal(data)
   }
 
   useEffect(()=>{
-    fetch(BUCKET_URL).then((response)=>{return response.text()}).then((text)=>setApiUrl(text))
+    fetch(BUCKET_URL).then((response)=>{return response.text()}).then((text)=>setApiUrl(text)).catch((error) => console.log(error.message))
   },[])
 
   const getData = function(camera_name, date) {
@@ -47,30 +50,31 @@ export default function App() {
     }
     else {
       let now;
-    if(date){
-      now = date
-    }
-    else{
-      now = new Date()
-    }
-    let start = Math.floor(now.setHours(0,0,0) / 1000)
-    let end = Math.floor(now.setHours(23,59,59) / 1000)
-    fetch(apiUrl+`/frames?camera=${camera_name}&start=${start}&end=${end}`).then((response)=>{return response.json()}).then(
-      (data) =>{
-        let new_data = []
-        for(let frame of data){
-          let time = new Date(parseInt(frame.timestamp)*1000)
-          let datapoint = {
-            x: frame.timestamp,
-            uv: frame.cars,
-            url: frame.s3_url,
-            boxes: frame.boxes
-          }
-          new_data.push(datapoint)
-        }
-        setData(new_data)
+      if(date) {
+        now = date
       }
-    )
+      else {
+        now = new Date()
+      }
+      let start = Math.floor(now.setHours(0,0,0) / 1000)
+      let end = Math.floor(now.setHours(23,59,59) / 1000)
+      fetch(apiUrl+`/frames?camera=${camera_name}&start=${start}&end=${end}`).then((response)=>{return response.json()}).then(
+        (data) =>{
+          let new_data = []
+          for(let frame of data){
+            let time = new Date(parseInt(frame.timestamp)*1000)
+            let datapoint = {
+              x: frame.timestamp,
+              uv: frame.cars,
+              url: frame.s3_url,
+              boxes: frame.boxes
+            }
+            new_data.push(datapoint)
+          }
+          setData(new_data)
+          setNormal(new_data)
+        }
+      ).catch((error) => console.log(error.message))
     }
   }
 
@@ -153,8 +157,12 @@ export default function App() {
           <div className="Graph-pane">
             <div className="Title"><p>24 Hour Data for&nbsp;</p><p style={{color:"rgb(176, 217, 255)"}}>{cameraName}&nbsp;</p><p>on :</p><DatePicker selected={date} onChange={(date) => setDate(date)} /></div>
             <div className="Graph-box">
-              {data.length > 0 ? 
-              <Chart data={data} date={date}/> : 
+              {data.length > 0 ?
+                <div>
+                  <Chart data={data} date={date}/>
+                  <Slider callback={setData} normal={normal}/>
+                </div>
+               : 
               <div className="Chart">No data found for selected camera on given date. Refresh if you think there should be</div>
               }
             </div>      

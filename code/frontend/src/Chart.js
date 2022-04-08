@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip, ResponsiveContainer} from 'recharts';
-import {Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import {Modal, ModalHeader, ModalBody, Button, FormGroup, Input } from 'reactstrap';
 import BoundedImage from './BoundedImage'
 
 export default function Chart(props) {
 
-  const chart_data = props.data
+  let chart_data = props.data
 
   const LabelAsPoint = function (props){
     const onClick = () => {
@@ -67,7 +67,7 @@ export default function Chart(props) {
           }
       }
 
-      const getTicks = function(timestamp){
+      const getTicks = function(timestamp) {
         let date = new Date(timestamp.getTime())
         let ticks = []
         for(let i = 0; i<25; i++){
@@ -82,9 +82,6 @@ export default function Chart(props) {
 
       const toggle = (payload) => {
         setSelectedDot(payload)
-        if(modal) {
-
-        }
         setModal(!modal);
       }
 

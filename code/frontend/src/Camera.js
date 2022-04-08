@@ -10,9 +10,6 @@ export default function Camera(props) {
     }
 
     const toggle = () => {
-        if(modal) {
-
-        }
         setModal(!modal);
     }
     function handleSubmit(e) {
