@@ -10,7 +10,7 @@ import Chart from './Chart';
 import Slider from './Slider';
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
-const DEV_DATA = false
+const DEV_DATA = true
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
 const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
@@ -24,6 +24,8 @@ export default function App() {
   const [cameraName, setCameraName] = useState("")
   const [date, setDate] = useState(new Date())
   const [normal, setNormal] = useState([])
+  const [ granularity, setGranularity ] = useState(0);
+
 
   const seedDevData = function() {
     let data = []
@@ -94,6 +96,7 @@ export default function App() {
 
   function changeCamera(name) {
     setCameraName(name);
+    setGranularity(0);
   }
 
   function addCamera(camera_name, url) {
@@ -108,7 +111,7 @@ export default function App() {
 
   function deleteCamera(camera_name, url) {
     if(cameraName === camera_name) {
-      setCameraName("");
+      changeCamera("");
     }
     fetch(apiUrl+`/cameras?camera=${camera_name}&url=${url}`, {
       method: 'DELETE'
@@ -159,7 +162,7 @@ export default function App() {
               {data.length > 0 ?
                 <div>
                   <Chart data={data} date={date}/>
-                  <Slider callback={setData} normal={normal}/>
+                  <Slider granularity={granularity} setValue={setGranularity} callback={setData} normal={normal}/>
                 </div>
                : 
               <div className="Chart">No data found for selected camera on given date. Refresh if you think there should be</div>

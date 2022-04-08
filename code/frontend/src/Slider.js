@@ -3,13 +3,11 @@ import {Form, FormGroup, Input, Label} from 'reactstrap';
 import {largestTriangleThreeBucket} from 'd3fc-sample'
 
 export default function Slider(props) {
-    const [ granularity, setGranularity ] = React.useState(0);
-    const normal = props.normal
     const sampler = largestTriangleThreeBucket();
 
     function downSample(amount) {
         if(amount < 1) {
-            props.callback(normal);
+            props.callback(props.normal);
         }
         else {
             sampler.x((d) => { return d.x; })
@@ -34,9 +32,9 @@ export default function Slider(props) {
                     type="range"
                     min={0}
                     max={10}
-                    value={granularity}
+                    value={props.granularity}
                     onChange={e => {
-                        setGranularity(e.target.value)
+                        props.setValue(e.target.value)
                         downSample(e.target.value)
                     }
                     }
