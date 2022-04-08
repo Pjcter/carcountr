@@ -9,10 +9,10 @@ import { ListGroup } from 'reactstrap';
 import Chart from './Chart';
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
+const DEV_DATA = false
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
-const dev_data = [{x:1649241000, uv:8, url:dev_url}, {x:1649273867, uv:6, url:dev_url}, {x:1649279000, uv:10, url:dev_url}]
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
-const BUCKET_URL = "https://carcountr-frontend.s3.amazonaws.com/api_url"
+const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
 
@@ -22,12 +22,31 @@ export default function App() {
   const [data, setData] = useState([])
   const [cameraName, setCameraName] = useState('')
   const [date, setDate] = useState(new Date())
+
+  const seedDevData = function() {
+    let data = []
+    let start = 0;
+    let finish = 240;
+    let date = (Math.floor(Date.now()/86400000)*86400)-72000
+    while(start < finish) {
+      let current_timestamp = date+(start*360)
+      let current_value = Math.floor(Math.random()*10)
+      start++;
+      data.push({x:current_timestamp, uv:current_value, url:dev_url})
+    }
+    setData(data)
+  }
+
   useEffect(()=>{
     fetch(BUCKET_URL).then((response)=>{return response.text()}).then((text)=>setApiUrl(text))
   },[])
 
   const getData = function(camera_name, date) {
-    let now;
+    if(DEV_DATA) {
+      seedDevData()
+    }
+    else {
+      let now;
     if(date){
       now = date
     }
@@ -52,18 +71,22 @@ export default function App() {
         setData(new_data)
       }
     )
-    //setData(dev_data)
+    }
   }
 
   function fetchCameras() {
-    fetch(apiUrl+"/cameras", {
-      method: 'GET',
+    if(DEV_DATA) {
+      setCameras(dev_cams)
+    }
+    else {
+      fetch(apiUrl+"/cameras", {
+        method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            setCameras(data);
       })
-      .then(response => response.json())
-      .then(data => {
-          setCameras(data);
-    })
-    //setCameras(dev_cams)
+    }
   }
 
   function changeCamera(name) {
