@@ -7,7 +7,7 @@ import Camera from './Camera';
 import "react-datepicker/dist/react-datepicker.css";
 import { ListGroup } from 'reactstrap';
 import Chart from './Chart';
-import Slider from './Slider';
+import Options from './Options';
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
 const DEV_DATA = true
@@ -24,11 +24,11 @@ export default function App() {
   const [cameraName, setCameraName] = useState("")
   const [date, setDate] = useState(new Date())
   const [normal, setNormal] = useState([])
-  const [ granularity, setGranularity ] = useState(0);
+  const [ granularity, setGranularity ] = useState(false);
 
 
   const seedDevData = function() {
-    let data = []
+    let data = [];
     let start = 0;
     let finish = 240;
     let date = (Math.floor(Date.now()/86400000)*86400)-72000
@@ -105,9 +105,7 @@ export default function App() {
       method: 'POST',
       })
       .then(response => response.json())
-      .then(data => {
-        fetchCameras()
-    })
+      .then(fetchCameras())
   }
 
   function deleteCamera(camera_name, url) {
@@ -118,9 +116,7 @@ export default function App() {
       method: 'DELETE'
     })
       .then(response => response.json())
-      .then(data => {
-        fetchCameras()
-    })
+      .then(fetchCameras())
    fetchCameras();
   }
 
@@ -158,12 +154,12 @@ export default function App() {
             }
           { cameraName !== "" && cameras.Count > 0 ? 
           <div className="Graph-pane">
-            <div className="Title"><p>24 Hour Data for&nbsp;</p><p style={{color:"rgb(176, 217, 255)"}}>{cameraName}&nbsp;</p><p>on :</p><DatePicker selected={date} onChange={(date) => setDate(date)} /></div>
+            <div id="test" className="Title"><p>24 Hour Data for&nbsp;</p><p style={{color:"rgb(176, 217, 255)"}}>{cameraName}&nbsp;</p><p>on :</p><DatePicker selected={date} onChange={(date) => setDate(date)} /></div>
             <div className="Graph-box">
               {data.length > 0 ?
                 <div>
                   <Chart data={data} date={date}/>
-                  <Slider granularity={granularity} setValue={setGranularity} callback={setData} normal={normal}/>
+                  <Options granularity={granularity} setValue={setGranularity} callback={setData} normal={normal}/>
                 </div>
                : 
               <div className="Chart">No data found for selected camera on given date. Refresh if you think there should be</div>

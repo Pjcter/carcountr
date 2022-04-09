@@ -88,12 +88,13 @@ h4{
   padding-bottom:15px;
   padding-left:15px;
   width:140% !important;
+  
 }
-input{
-  height:100% !important;
+#test input {
+  height:100%;
   font-size:100%;
   cursor: pointer;
-  width:100% !important;
+  width:100%;
   background-color: transparent !important;
   color:rgb(176, 217, 255) !important;
   border: none !important;
