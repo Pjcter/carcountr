@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip, ResponsiveContainer} from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip } from 'recharts';
 import {Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import BoundedImage from './BoundedImage'
+import useWindowDimensions from './windowDimensions';
 
 export default function Chart(props) {
 
@@ -79,6 +80,7 @@ export default function Chart(props) {
 
       const [modal, setModal] = useState(false);
       const [selectedDot, setSelectedDot] = useState({x:0, url:""})
+      const { height, width } = useWindowDimensions();
 
       const toggle = (payload) => {
         setSelectedDot(payload)
@@ -87,7 +89,7 @@ export default function Chart(props) {
 
     return (
       <div>
-        <LineChart data={props.data} width={1100} height={600}>
+        <LineChart data={props.data} width={width/1.8} height={height/1.7}>
         <Line        
           label={ <LabelAsPoint /> }
           activeDot={true}

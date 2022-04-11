@@ -10,7 +10,7 @@ import Chart from './Chart';
 import Options from './Options';
 
 //!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
-const DEV_DATA = true
+const DEV_DATA = false
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
 const BUCKET_URL = "https://carcountr-frontend-franks.s3.amazonaws.com/api_url"
@@ -141,7 +141,7 @@ export default function App() {
               <br></br>
               <ListGroup>
               {Array.from(cameras.Items).map(camera => {
-                return(<div><Camera delete={deleteCamera} callback={changeCamera} url={camera.url} name={camera.camera} key={camera.camera} selected={cameraName}></Camera><br></br></div>);
+                return(<div key={camera.camera}><Camera delete={deleteCamera} callback={changeCamera} url={camera.url} name={camera.camera} selected={cameraName}></Camera><br></br></div>);
               })}
               </ListGroup>
               <AddCamera callback={addCamera}/>
