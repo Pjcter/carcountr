@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import {Modal, ModalHeader, ModalBody, Button, Tooltip } from 'reactstrap';
 
 export default function Camera(props) {
 
@@ -9,6 +9,10 @@ export default function Camera(props) {
         props.callback(props.name);
     }
 
+    const [tooltip,setTooltip] = useState(false);
+    const toggleTooltip = () => {
+        setTooltip(!tooltip);
+    }
     const toggle = () => {
         if(modal) {
 
@@ -25,11 +29,11 @@ export default function Camera(props) {
         <div onClick={() => {clicked()}}>
             <div className={props.selected === props.name ? "Livestream-selected": "Livestream"}>
                 <div className="Livestream-header">
-                    <div onClick={()=> {toggle();}} className="Delete">x</div>
+                    <div onClick={()=> {toggle();}} className="Delete">&#x2715;</div>
                     <h2>{props.name}</h2>
                 </div>
                 <br></br>
-                <p style={{overflowWrap:"break-word"}}>{props.url}</p>
+                <div style={{overflow:"hidden"}} id={"urlTooltip"+props.name}>{props.url.length > 40 ? props.url.substr(0,40) +"   ..." : props.url} <Tooltip isOpen={tooltip} target={"urlTooltip"+props.name} toggle={toggleTooltip}>{props.url}</Tooltip></div>
             </div>
             <Modal isOpen={modal} toggle={toggle}>
                 <ModalHeader>
