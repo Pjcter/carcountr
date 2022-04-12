@@ -34,7 +34,7 @@ export default function App() {
       let current_timestamp = date+(start*360)
       let current_value = Math.floor(Math.random()*(120-Math.abs(start-120))/10)
       start++;
-      data.push({x:current_timestamp, uv:current_value, url:dev_url})
+      data.push({x:current_timestamp, uv:current_value, url:dev_url, boxes:"[]"})
     }
     setData(data)
     setNormal(data)
@@ -94,7 +94,7 @@ export default function App() {
 
   function changeCamera(name) {
     setCameraName(name);
-    setGranularity(0);
+    setGranularity(false);
   }
 
   function addCamera(camera_name, url) {
