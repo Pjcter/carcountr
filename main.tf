@@ -34,7 +34,6 @@ python3 ffmpeg.py
 --//--
 EOF
   iam_instance_profile = "${aws_iam_instance_profile.ffmpeg_profile.name}"
-  key_name = "${aws_key_pair.carcountr_key_pair.id}"
   subnet_id = "${aws_subnet.public_subnet.id}"
   vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
 
@@ -93,12 +92,6 @@ resource "aws_iam_role_policy" "s3_policy" {
   ]
 }
 EOF
-}
-
-/* Key pair for EC2 */
-resource "aws_key_pair" "carcountr_key_pair" {
-  key_name   = "carcountr"
-  public_key = file(var.PUBLIC_KEY_PATH)
 }
 
 /* S3 bucket for hosting frames */
