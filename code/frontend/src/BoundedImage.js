@@ -22,14 +22,14 @@ const BoundedImage = function (props) {
             let box = instance["BoundingBox"]
             ctx.beginPath();
             ctx.rect(cWidth*box.Left, cHeight*box.Top, cWidth*box.Width, cHeight*box.Height)
-            ctx.strokeStyle = "rgb(13, 202, 240)";
+            ctx.strokeStyle = "red";
             ctx.stroke()
         }
         console.log("mounted")
     },[])
 
     return (
-        <canvas ref={canvasRef} style={{width:"100%", height:"100%"}}>
+        <canvas ref={canvasRef} width={1000} height={500} style={{width:"100%", height:"100%"}}>
             
         </canvas>
     )

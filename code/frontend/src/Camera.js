@@ -14,9 +14,6 @@ export default function Camera(props) {
         setTooltip(!tooltip);
     }
     const toggle = () => {
-        if(modal) {
-
-        }
         setModal(!modal);
     }
     function handleSubmit(e) {

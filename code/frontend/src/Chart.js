@@ -1,16 +1,29 @@
 import React, {useState} from 'react';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip} from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label, Tooltip } from 'recharts';
 import {Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import BoundedImage from './BoundedImage'
+import useWindowDimensions from './windowDimensions';
 
 export default function Chart(props) {
-  const chart_data = props.data
+
+  let chart_data = props.data
 
   const LabelAsPoint = function (props){
     const onClick = () => {
         toggle(chart_data[props.index]);
     }
     const { x, y } = props;
+    if(isNaN(y)) {
+      return (
+        <circle
+            className={`dot`}
+            onClick={onClick}
+            cx={x}
+            cy={600-73}
+            r={8}
+            fill={"transparent"}/>
+    );
+    }
     return (
             <circle
                 className={`dot`}
@@ -28,7 +41,7 @@ export default function Chart(props) {
           let period = "PM"
           if(time.getHours()<12){
             period = "AM"
-            if(time.getHours()==0){
+            if(time.getHours()===0){
               time.setHours(12)
             }
           }
@@ -39,7 +52,7 @@ export default function Chart(props) {
           return (
             <div className="custom-tooltip">
               <p className="label">{`${timestr} - ${payload[0].value} Cars`}</p>
-              <img src={getImage(label)} width={150}></img>
+              <img src={getImage(label)} alt="Thumbnail" width={150}></img>
             </div>
           );
         }
@@ -55,7 +68,7 @@ export default function Chart(props) {
           }
       }
 
-      const getTicks = function(timestamp){
+      const getTicks = function(timestamp) {
         let date = new Date(timestamp.getTime())
         let ticks = []
         for(let i = 0; i<25; i++){
@@ -67,27 +80,19 @@ export default function Chart(props) {
 
       const [modal, setModal] = useState(false);
       const [selectedDot, setSelectedDot] = useState({x:0, url:""})
+      const { height, width } = useWindowDimensions();
 
       const toggle = (payload) => {
-        console.log(payload)
         setSelectedDot(payload)
-        if(modal) {
-
-        }
         setModal(!modal);
       }
 
-      function handleSubmit(e) {
-          e.preventDefault();
-          //Validate input here
-          toggle();
-      }
     return (
       <div>
-        <LineChart className="Chart" width={1100} height={600} data={props.data}>
-        <Line         
+        <LineChart data={props.data} width={width/1.8} height={height/1.7}>
+        <Line        
           label={ <LabelAsPoint /> }
-          activeDot={false}
+          activeDot={true}
           type="monotone"
           dataKey="uv"
           stroke="#8884d8" 
@@ -106,7 +111,7 @@ export default function Chart(props) {
             let period = "PM"
             if(date.getHours()<12){
               period = "AM"
-              if(date.getHours()==0){
+              if(date.getHours()===0){
                 date.setHours(12)
               }
             }
@@ -124,7 +129,7 @@ export default function Chart(props) {
         </YAxis>
         <Tooltip content={<CustomTooltip />}/>
       </LineChart>
-      <Modal isOpen={modal} toggle={toggle} size={"lg"} centered> 
+        <Modal isOpen={modal} toggle={toggle} size={"lg"} centered> 
                 <ModalHeader>
                     {
                       (()=>{
@@ -132,7 +137,7 @@ export default function Chart(props) {
                         let period = "PM"
                         if(date.getHours()<12){
                           period = "AM"
-                          if(date.getHours()==0){
+                          if(date.getHours()===0){
                             date.setHours(12)
                           }
                         }
