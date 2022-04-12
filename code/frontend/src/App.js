@@ -3,19 +3,16 @@ import {useState, useEffect} from 'react'
 import DatePicker from "react-datepicker";
 import AddCamera from './AddCamera';
 import Camera from './Camera';
-
 import "react-datepicker/dist/react-datepicker.css";
 import { ListGroup } from 'reactstrap';
 import Chart from './Chart';
 import Options from './Options';
 
-//!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
+/* Constants for development purposes */
 const DEV_DATA = false
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
-const BUCKET_URL = "https://carcountr-frontend.s3.amazonaws.com/api_url"
 
-//!!!!!CHANGE BACK TO NORMAL IF I FORGOT!!!!!!!
 
 export default function App() {
   const [apiUrl, setApiUrl] = useState("");
@@ -44,7 +41,7 @@ export default function App() {
   }
 
   useEffect(()=>{
-    fetch(BUCKET_URL).then((response)=>{return response.text()}).then((text)=>setApiUrl(text)).catch((error) => console.log(error.message))
+    fetch("/api_url").then((response)=>{return response.text()}).then((text)=>setApiUrl(text)).catch((error) => console.log(error.message))
   },[])
 
   const getData = function(camera_name, date) {
@@ -67,7 +64,7 @@ export default function App() {
           for(let frame of data){
             let datapoint = {
               x: frame.timestamp,
-              uv: frame.cars,
+              uv: Number(frame.cars),
               url: frame.s3_url,
               boxes: frame.boxes
             }
