@@ -29,8 +29,7 @@ export default function Options(props) {
                     data.push(point);
                 }
             }
-            console.log("setting data to a special COPY of the normal")
-            props.callback(saved);
+            props.callback(data);
         }
     }
 

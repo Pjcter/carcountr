@@ -7,29 +7,29 @@ An online cloud system to view traffic livestreams and provide insights on the n
 
 - Frank Agnello 
 - Peter Carter
-- Jay Wilson
 
 ## Prerequisites
 
 - Terraform
--  AWS CLI
+- AWS CLI
 
 ## How to deploy it 
 
+1. Update varibles in Project/vars.tf
 1. terraform init
-2. terraform plan
-3. terraform apply
+2. terraform plan -out "final"
+3. terraform apply "final"
 
 ## Known bugs and disclaimers
-(It may be the case that your implementation is not perfect.)
-
-Document any known bug or nuisance.
-If any shortcomings, make clear what these are and where they are located.
+AWS Requires each bucket to have a unique name, if your bucket name already exists on AWS some errors may occur.
+This is made for AWS Free Tier, not Academy. Some issues may come up if running in an Academy account.
 
 ## How to test/run/access/use it
 
-1. Open in your browser `http://_deploylocation_:8080/`
-2.  _add any other steps required or examples of how to use/run_
+1. Open in your browser and navigate to the frontend URL given in the terraform output
+2. Find a **m3u8** stream link that includes cars
+3. Click "Add Camera" to supply a stream name and related link
+4. Wait until data comes in, by default cameras are polled every 2 minutes
 
 
 ## License
