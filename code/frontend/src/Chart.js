@@ -6,35 +6,6 @@ import useWindowDimensions from './windowDimensions';
 
 export default function Chart(props) {
 
-  let chart_data = props.data
-
-  const LabelAsPoint = function (props){
-    const onClick = () => {
-        toggle(chart_data[props.index]);
-    }
-    const { x, y } = props;
-    if(isNaN(y)) {
-      return (
-        <circle
-            className={`dot`}
-            onClick={onClick}
-            cx={x}
-            cy={600-73}
-            r={8}
-            fill={"transparent"}/>
-    );
-    }
-    return (
-            <circle
-                className={`dot`}
-                onClick={onClick}
-                cx={x}
-                cy={y}
-                r={8}
-                fill="transparent"/>
-        );
-    }
-
     function CustomTooltip({ payload, label, active }) {
         if (active) {
           let time = new Date(payload[0].payload.x*1000)
@@ -82,20 +53,65 @@ export default function Chart(props) {
       const [selectedDot, setSelectedDot] = useState({x:0, url:""})
       const { height, width } = useWindowDimensions();
 
-      const toggle = (payload) => {
-        setSelectedDot(payload)
+      const toggle = (data, index) => {
+        setSelectedDot(index.payload)
         setModal(!modal);
       }
 
     return (
       <div>
+        {props.smoothed === true ? 
+        //Moving average chart
+  
         <LineChart data={props.data} width={width/1.8} height={height/1.7}>
         <Line        
-          label={ <LabelAsPoint /> }
-          activeDot={true}
           type="monotone"
           dataKey="uv"
-          stroke="#8884d8" 
+          stroke="#8884d8"
+          strokeWidth={2}
+          dot={false}
+        />
+        <CartesianGrid stroke="#2a406d"/>
+        <XAxis
+          dataKey='x'
+          domain={[getTicks(props.date)[0],getTicks(props.date)[23]]}
+          type='number'
+          ticks={getTicks(props.date)}
+          tickCount={25}
+          interval={0}
+          fontSize={13}
+          tickFormatter={(tick)=>{
+            let date = new Date(tick*1000)
+            let period = "PM"
+            if(date.getHours()<12){
+              period = "AM"
+              if(date.getHours()===0){
+                date.setHours(12)
+              }
+            }
+            else if(date.getHours()>12){
+              date.setHours(date.getHours()-12)
+            }
+            return `${date.getHours()}${period}`
+          }}
+          height={60}
+        >
+          <Label value="Time of Day" offset={5} position="insideBottom" fontSize="1.5em" stroke="#2a406d"/>
+        </XAxis>
+        <YAxis width={80} domain={['dataMin', 'auto']} type='number' allowDecimals='false'>
+          <Label value={"Test"} position="insideLeft" fontSize="1.5em" offset={5} stroke="#2a406d"/>
+        </YAxis>
+      </LineChart>
+
+        //Regualr chart
+        : 
+        <LineChart data={props.data} width={width/1.8} height={height/1.7}>
+        <Line        
+          activeDot={{ onClick: toggle }}
+          type="monotone"
+          dataKey="uv"
+          stroke="#8884d8"
+          strokeWidth={2}
         />
         <CartesianGrid stroke="#2a406d"/>
         <XAxis
@@ -129,7 +145,8 @@ export default function Chart(props) {
         </YAxis>
         <Tooltip content={<CustomTooltip />}/>
       </LineChart>
-        <Modal isOpen={modal} toggle={toggle} size={"lg"} centered> 
+        }
+        <Modal isOpen={modal} toggle={() => {setModal(false)}} size={"lg"} centered> 
                 <ModalHeader>
                     {
                       (()=>{
@@ -153,7 +170,7 @@ export default function Chart(props) {
                     <BoundedImage boxes={selectedDot.boxes} url={selectedDot.url}></BoundedImage>
                     <br></br>
                     <br></br>
-                        <Button className="btn-info" onClick={()=>{toggle(selectedDot);}}>
+                        <Button className="btn-info" onClick={() => {setModal(false)}}>
                             Back
                         </Button>
                 </ModalBody>

@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {Form, FormGroup, Input, Label} from 'reactstrap';
 import './Options.css'
 
 export default function Options(props) {
-    const [saved] = useState([...props.normal]);
-
     function smooth(answer) {
-        props.callback(props.normal);
         if(answer === false) {
-            props.callback(props.normal);
+            props.reset();
         }
         else {
+            let mutated = [...props.normal];
             let data = [];
-            for(let point of saved) {
-                let offset = saved.indexOf(point)
+            let max = 0;
+            for(let point of mutated) {
+                let offset = mutated.indexOf(point)
                 let average = 0;
                 for(let index = offset-2; index < offset+2; index++) {
-                    if(saved[index] !== undefined) {
-                        average += saved[index].uv;
+                    if(mutated[index] !== undefined) {
+                        average += mutated[index].uv;
                     }
                 }
                 if(average !== 0) {
+                    if(average > max) {
+                        max = average;
+                    }
                     let newpoint = point;
                     newpoint.uv = average/4;
                     data.push(newpoint);

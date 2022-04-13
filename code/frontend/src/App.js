@@ -10,6 +10,7 @@ import Options from './Options';
 
 /* Constants for development purposes */
 const DEV_DATA = false
+const DEV_URL = false
 const dev_url = "https://media.istockphoto.com/photos/generic-red-suv-on-a-white-background-side-view-picture-id1157655660?k=20&m=1157655660&s=612x612&w=0&h=WOtAthbmJ9iG1zbKo4kNUsAGMe6-xM-E7a8TMxb5xmk="
 const dev_cams = {Count:2, Items: [{camera:"test",url:"https://fakeurl.com/test.mp3u8"},{camera:"RIT",url:"https://s53.nysdot.skyvdn.com/rtplive/R4_090/chunklist_w1560132765.m3u8"}]}
 
@@ -20,7 +21,6 @@ export default function App() {
   const [data, setData] = useState([])
   const [cameraName, setCameraName] = useState("")
   const [date, setDate] = useState(new Date())
-  const [normal, setNormal] = useState([])
   const [ granularity, setGranularity ] = useState(false);
 
 
@@ -28,20 +28,24 @@ export default function App() {
     let data = [];
     let start = 0;
     let finish = 240;
-    let date = (Math.floor(Date.now()/86400000)*86400)-72000
+    let time = Math.floor(date.setHours(0,0,0) / 1000)
     while(start < finish) {
       console.log()
-      let current_timestamp = date+(start*360)
-      let current_value = Math.floor(Math.random()*(120-Math.abs(start-120))/10)
+      let current_timestamp = time+(start*360)
+      let current_value = Math.floor(Math.random()*(120-Math.abs(start-120))/8)
       start++;
       data.push({x:current_timestamp, uv:current_value, url:dev_url, boxes:"[]"})
     }
     setData(data)
-    setNormal(data)
   }
 
   useEffect(()=>{
-    fetch("/api_url").then((response)=>{return response.text()}).then((text)=>setApiUrl(text)).catch((error) => console.log(error.message))
+    if(DEV_URL) {
+      fetch("http://carcountr-frontend.s3-website-us-east-1.amazonaws.com/api_url").then((response)=>{return response.text()}).then((text)=>setApiUrl(text)).catch((error) => console.log(error.message))
+    }
+    else {
+      fetch("/api_url").then((response)=>{return response.text()}).then((text)=>setApiUrl(text)).catch((error) => console.log(error.message))
+    }
   },[])
 
   const getData = function(camera_name, date) {
@@ -71,7 +75,6 @@ export default function App() {
             new_data.push(datapoint)
           }
           setData(new_data)
-          setNormal(new_data)
         }
       ).catch((error) => console.log(error.message))
     }
@@ -95,6 +98,10 @@ export default function App() {
   function changeCamera(name) {
     setCameraName(name);
     setGranularity(false);
+  }
+
+  function resetSmooth() {
+    getData(cameraName, date)
   }
 
   function addCamera(camera_name, url) {
@@ -155,8 +162,8 @@ export default function App() {
             <div className="Graph-box">
               {data.length > 0 ?
                 <div>
-                  <Chart data={data} date={date}/>
-                  <Options granularity={granularity} setValue={setGranularity} callback={setData} normal={normal}/>
+                  <Chart smoothed={granularity} data={data} date={date}/>
+                  <Options granularity={granularity} setValue={setGranularity} reset={resetSmooth} callback={setData} normal={data}/>
                 </div>
                : 
               <div className="Chart">No data found for selected camera on given date. Refresh if you think there should be</div>

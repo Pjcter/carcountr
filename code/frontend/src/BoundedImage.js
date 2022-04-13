@@ -25,7 +25,6 @@ const BoundedImage = function (props) {
             ctx.strokeStyle = "red";
             ctx.stroke()
         }
-        console.log("mounted")
     },[])
 
     return (
