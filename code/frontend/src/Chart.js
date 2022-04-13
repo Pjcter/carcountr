@@ -7,7 +7,7 @@ import useWindowDimensions from './windowDimensions';
 export default function Chart(props) {
 
     function CustomTooltip({ payload, label, active }) {
-        if (active) {
+        if (active && payload) {
           let time = new Date(payload[0].payload.x*1000)
           let period = "PM"
           if(time.getHours()<12){
