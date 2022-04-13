@@ -15,6 +15,8 @@ An online cloud system to view traffic livestreams and provide insights on the n
 
 ## How to deploy it 
 
+Make sure you run 'aws configure' to set your credentials file to your AWS Free Tier credentials
+
 1. Update varibles in Project/vars.tf
 1. terraform init
 2. terraform plan -out "final"
