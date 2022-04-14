@@ -98,7 +98,7 @@ export default function Chart(props) {
         >
           <Label value="Time of Day" offset={5} position="insideBottom" fontSize="1.5em" stroke="#2a406d"/>
         </XAxis>
-        <YAxis width={80} domain={['dataMin', 'auto']} type='number' allowDecimals='false'>
+        <YAxis width={80} domain={['auto', 'auto']} type='number' allowDecimals='false'>
           <Label value={"Test"} position="insideLeft" fontSize="1.5em" offset={5} stroke="#2a406d"/>
         </YAxis>
       </LineChart>
@@ -140,7 +140,7 @@ export default function Chart(props) {
         >
           <Label value="Time of Day" offset={5} position="insideBottom" fontSize="1.5em" stroke="#2a406d"/>
         </XAxis>
-        <YAxis width={80} domain={['dataMin', 'dataMax+2']} type='number'>
+        <YAxis width={80} domain={['auto', 'dataMax+2']} type='number'>
           <Label value="Cars" position="insideLeft" fontSize="1.5em" offset={5} stroke="#2a406d"/>
         </YAxis>
         <Tooltip content={<CustomTooltip />}/>
