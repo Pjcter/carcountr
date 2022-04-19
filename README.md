@@ -16,7 +16,7 @@ An online cloud system to view traffic livestreams and provide insights on the n
 
 Configuration:
 1. Update variables in vars.tf (ACCOUNT_ID to your AWS Account ID and FRONTEND/BACKEND_BUCKET_NAME variables to unique S3 bucket names)
-2. run 'aws configure' to set your ./aws/credentials file to our AWS Free Tier credentials
+2. run 'aws configure' to set your ./aws/credentials file to your AWS Free Tier credentials
 
 Deployment: 
 
