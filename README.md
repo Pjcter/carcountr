@@ -33,7 +33,7 @@ This is made for AWS Free Tier, not Academy. Some issues may come up if running 
 1. Open in your browser and navigate to the frontend URL given in the terraform output
 2. Find a **m3u8** stream link that includes cars (e.g: https://s53.nysdot.skyvdn.com/rtplive/R4_090/playlist.m3u8)
 3. Click "Add Camera" to supply a stream name and related link
-4. Wait until data comes in, by default cameras are polled every 2 minutes
+4. Wait until data comes in, by default cameras are polled every 10 minutes
 
 
 ## License
