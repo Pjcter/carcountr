@@ -1,5 +1,4 @@
 # Car Countr
-# Modify this document to expand any and all sections that are applicable for a better understanding from your users/testers/collaborators (remove this comment and other instructions areas for your FINAL release)
 
 An online cloud system to view traffic livestreams and provide insights on the number of cars over time
   
